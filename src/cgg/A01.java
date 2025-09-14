@@ -11,6 +11,7 @@ public class A01 {
     int height = 400;
 
     // This class instance defines the contents of the image.
+    Color pink = new Color(1.0,0.75,0.8);
     var constant = new ConstantColor(gray);
 
     // Creates an image and iterates over all pixel positions inside the image.
