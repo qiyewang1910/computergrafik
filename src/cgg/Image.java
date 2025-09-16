@@ -28,8 +28,8 @@ public class Image implements tools.Image {
 
         int index = (y*width + x) * 3;
         pixels[index] = color.r(); //红
-        pixels[index] = color.g(); //绿
-        pixels[index] = color.b(); //蓝
+        pixels[index+1] = color.g(); //绿
+        pixels[index+2] = color.b(); //蓝
     }
 
 

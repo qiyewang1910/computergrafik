@@ -12,8 +12,9 @@ public class A01 {
     int height = 400;
 
     // This class instance defines the contents of the image.
-    Color pink = new Color(1.0,0.75,0.8);
-    var constant = new ConstantColor(gray);
+    Color magenta = new Color(1.0,0.0,1.0);
+
+    var constant = new ConstantColor(magenta);
 
     // Creates an image and iterates over all pixel positions inside the image.
     var image = new Image(width, height);
