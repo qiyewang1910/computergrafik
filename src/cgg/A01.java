@@ -1,6 +1,7 @@
 
 package cgg;
 
+import tools.Color;
 import static tools.Functions.*;
 import static tools.Color.*;
 
