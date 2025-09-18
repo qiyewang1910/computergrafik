@@ -15,8 +15,8 @@ import static tools.Color.yellow;
 public class A01 {
 
   public static void main(String[] args) {
-    int width = 600;
-    int height = 600;
+    int width = 500;
+    int height = 500;
 
     DiscLiveStart drawer = new DiscLiveStart();
     drawer.drawGridOfCircles(width, height, "6*6_circle", 6, 6);
@@ -35,6 +35,7 @@ public class A01 {
     public void drawGridOfCircles(int width, int height, String fileName, int rows, int cols){
       var image = new Image(width, height);
 
+
       for (int x=0; x<width; x++){
         for (int y=0; y<height; y++) {
           image.setPixel(x, y, black);
@@ -48,12 +49,25 @@ public class A01 {
 
 
       //圆的参数，中心在图像中间，半径为120
-      for (int row = 0; row < rows; row++){
-        Color fillColor = rowColors[row];
+      for (int row = rows - 1; row >= 0; row--){
+        Color baseColor = rowColors[row];
 
-        for (int col=0; col<cols; col++){
+        for (int col = cols - 1; col >= 0; col--){
+          // 计算混合系数 t，从左到右，t从0逐渐增加到1
+          // 这里使用 (cols - 1 - col) 是为了让最左边（col=0）的 t=1，最右边（col=5）的 t=0
+          // 这样可以确保颜色从左到右逐渐变浅。
+          double mixFactor = ((double)(col) / (cols - 1))*0.8;
+
+          // 根据混合系数 t 计算新的填充颜色
+          Color fillColor = new Color(
+            baseColor.r() + (1.0 - baseColor.r()) * mixFactor,
+            baseColor.g() + (1.0 - baseColor.g()) * mixFactor,
+            baseColor.b() + (1.0 - baseColor.b()) * mixFactor
+          );
+
+
           //动态计算半径，让它随着列数增大
-          double radius = (Math.min(cellWidth, cellHeight) / 2.2) + (col*5);
+          double radius = (Math.min(cellWidth, cellHeight) / 2.4) + (col*5);
           double centerX = cellWidth * (col + 1);
           double centerY = cellHeight * (row + 1);
 
