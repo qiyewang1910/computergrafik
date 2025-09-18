@@ -44,7 +44,6 @@ public class A01 {
       // 计算网格参数
       double cellWidth = width / (double)(cols+1);
       double cellHeight = height / (double)(rows+1);
-      double radius = Math.min(cellWidth, cellHeight)/2.5;
       double borderThickness = 1; //边框厚度
 
 
@@ -53,6 +52,8 @@ public class A01 {
         Color fillColor = rowColors[row];
 
         for (int col=0; col<cols; col++){
+          //动态计算半径，让它随着列数增大
+          double radius = (Math.min(cellWidth, cellHeight) / 2.2) + (col*5);
           double centerX = cellWidth * (col + 1);
           double centerY = cellHeight * (row + 1);
 
@@ -69,7 +70,7 @@ public class A01 {
         }            
       }     
       // 在画完所有像素后，保存图片
-      image.writePng("a01-2");
+      image.writePng("a01-3");
     }
 
     //绘制单个圆形的辅助方法
