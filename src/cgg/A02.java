@@ -17,7 +17,7 @@ public class A02 {
   public static void main(String[] args) {
     int width = 600;
     int height = 600;
-    new Image(width, height);
+    Image image = new Image(width, height);
 
     DiscLiveStart drawer = new DiscLiveStart();
     drawer.drawGridOfCircles(width, height, "6*6_circle", 6, 6);
