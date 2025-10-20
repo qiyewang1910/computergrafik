@@ -20,11 +20,11 @@ public class A03 {
     int rows = 6;
     int cols = 6;
     int baseRadius = 32;
-    int radiusIncrement = 5;
+    int radiusIncrement = 6;
     int borderWidth = 1;
 
     int colSpacing = 80;
-    int rowSpacing = 80;
+    int rowSpacing = 85;
     
 
     //3. 绘制矩阵
