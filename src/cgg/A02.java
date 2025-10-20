@@ -19,6 +19,13 @@ public class A02 {
     int height = 600;
     Image image = new Image(width, height);
 
+    Ray ray = new Ray (
+      new Vec3(width / 2.0, height / 2.0, -100), // 光线起点，相机位置，z轴负方向为前方
+      new Vec3(0, 0, 1), //光线方向（指向场景）
+      0.001, // t_min(避免与自身相交的小值)
+      1000.0 // t_max（光线最大延伸距离）
+    );
+
     DiscLiveStart drawer = new DiscLiveStart();
     drawer.drawGridOfCircles(width, height, "6*6_circle", 6, 6);
   } 
@@ -85,9 +92,16 @@ public class A02 {
         }            
       }     
       // 在画完所有像素后，保存图片
-      image.writePng("a02");
+      image.writePng("a02-1");
     }
 
+    public static class Ray{
+
+
+    }
+
+
+    
     //绘制单个圆形的辅助方法
     private void drawCircleWithBorder(
       Image image, double centerX, double centerY, 

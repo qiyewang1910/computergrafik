@@ -12,7 +12,8 @@ import static tools.Color.magenta;
 import static tools.Color.yellow;
 
 
-public class A02 {
+
+public class A01 {
 
   public static void main(String[] args) {
     int width = 600;

@@ -14,6 +14,7 @@ public class ConstantColor implements Sampler {
 
     // Returns the color for the given position. All positions return the same
     // constant color.
+    @Override
     public Color getColor(Vec2 point) {
         return color;
     }
