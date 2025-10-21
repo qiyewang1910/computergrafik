@@ -43,7 +43,7 @@ public class A03 {
       }
     }
 
-    image.writePng("a01-4");
+    image.writePng("a01");
 
   }  
     
