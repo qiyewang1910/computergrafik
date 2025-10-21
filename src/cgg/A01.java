@@ -75,7 +75,7 @@ public class A01 {
         if (distanceSquared <= outerRadius * outerRadius 
             && distanceSquared > radius * radius) {
           image.setPixel(x, y, borderColor); // 白色边框
-        }
+        } 
       }
     }
   }
