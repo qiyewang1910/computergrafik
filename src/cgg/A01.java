@@ -1,123 +1,90 @@
 
 package cgg;
 
-import tools.*;
-import static tools.Color.black;
-import static tools.Color.gray;
-import static tools.Color.red;
-import static tools.Color.green;
-import static tools.Color.blue;
-import static tools.Color.cyan;
-import static tools.Color.magenta;
-import static tools.Color.yellow;
-
-
+import tools.Color;
 
 public class A01 {
-
   public static void main(String[] args) {
     int width = 600;
     int height = 600;
-    new Image(width, height);
+    Image image = new Image(width, height);
 
-    DiscLiveStart drawer = new DiscLiveStart();
-    drawer.drawGridOfCircles(width, height, "6*6_circle", 6, 6);
-  } 
+    // 1. background black
+    for (int x = 0; x < width; x++){
+      for (int y = 0; y < image.height(); y++){
+        image.setPixel(x, y, Color.black);
+      }
+    }
+
+    //2. 6*6 Rund
+    int rows = 6;
+    int cols = 6;
+    int baseRadius = 32;
+    int radiusIncrement = 6;
+    int borderWidth = 1;
+
+    int colSpacing = 80;
+    int rowSpacing = 85;
     
-  public static class DiscLiveStart {
-    private Color[] rowColors = {
-        red,
-        green,
-        blue,
-        cyan,
-        magenta,
-        yellow
-    };  
 
-    public void drawGridOfCircles(int width, int height, String fileName, int rows, int cols){
-      var image = new Image(width, height);
+    //3. 绘制矩阵
+    for (int row = 0; row < rows; row++){
+      for (int col= 0; col< cols; col++){
+        int centerX = 100 + col * colSpacing;  // 第1列X=100，每列+100
+        int centerY = 80 + row * rowSpacing;   // 第1行Y=80，每行+80
 
+        // 半径随列数变大：第1列=15，第2列=25，…，第6列=65
+        int currentRadius = baseRadius + col * radiusIncrement;
 
-      for (int x=0; x<width; x++){
-        for (int y=0; y<height; y++) {
-          image.setPixel(x, y, black);
-        }
+        Color color = getCircleColor(row, col, rows, cols);
+
+        drawCircleBorder (image, centerX, centerY, currentRadius, borderWidth, Color.white);
+        drawCircle (image, centerX, centerY, currentRadius, color);
       }
-
-      // 计算网格参数
-      double cellWidth = width / (double)(cols+1);
-      double cellHeight = height / (double)(rows+1);
-      double borderThickness = 1; //边框厚度
-
-
-      //圆的参数，中心在图像中间，半径为120
-      for (int row = rows - 1; row >= 0; row--){
-        Color baseColor = rowColors[row];
-
-        for (int col = cols - 1; col >= 0; col--){
-          // 计算混合系数 t，从左到右，t从0逐渐增加到1
-          // 这里使用 (cols - 1 - col) 是为了让最左边（col=0）的 t=1，最右边（col=5）的 t=0
-          // 这样可以确保颜色从左到右逐渐变浅。
-          double mixFactor = ((double)(col) / (cols - 1))*0.8;
-
-          // 根据混合系数 t 计算新的填充颜色
-          Color fillColor = new Color(
-            baseColor.r() + (1.0 - baseColor.r()) * mixFactor,
-            baseColor.g() + (1.0 - baseColor.g()) * mixFactor,
-            baseColor.b() + (1.0 - baseColor.b()) * mixFactor
-          );
-
-
-          //动态计算半径，让它随着列数增大
-          double radius = (Math.min(cellWidth, cellHeight) / 2.2) + (col*5);
-          double centerX = cellWidth * (col + 1);
-          double centerY = cellHeight * (row + 1);
-
-          drawCircleWithBorder(
-            image, 
-            centerX, 
-            centerY, 
-            radius, 
-            borderThickness, 
-            fillColor, 
-            gray,
-            black
-          ); 
-        }            
-      }     
-      // 在画完所有像素后，保存图片
-      image.writePng("a02");
     }
 
-    //绘制单个圆形的辅助方法
-    private void drawCircleWithBorder(
-      Image image, double centerX, double centerY, 
-      double radius, double borderThickness, 
-      Color fillColor, Color bordeColor,  Color bgColor
-    ){
-      int minX = (int) (centerX - radius - borderThickness);
-      int maxX = (int) (centerX + radius + borderThickness);
-      int minY = (int) (centerY - radius - borderThickness);
-      int maxY = (int) (centerY + radius + borderThickness);
-     
+    image.writePng("a01");
 
-      double outerRadiusSquared = radius * radius;
+  }  
+    
+  //绘制单个圆
+  private static void drawCircle(Image image, int centerX, int centerY, int radius, Color color) {
+    for(int x =0; x< image.width(); x++){
+      for (int y = 0; y < image.height(); y++){
+        int dx = x - centerX;
+        int dy = y - centerY;
+        int distanceSquared = dx * dx + dy * dy;
 
-      //遍历图像所有像素
-      for (int x = Math.max(0, minX); x< Math.min(image.width(), maxX); x++) {
-        for (int y=Math.max(0, minY); y < Math.min(image.height(), maxY); y++) {
-          //计算像素到圆心的距离平方
-          double dx = x-centerX;
-          double dy = y-centerY;
-          double distanceSquared = dx * dx + dy * dy;
+        if (distanceSquared <= radius * radius) {
+          image.setPixel(x, y, color);
+        }
+      }
+    }  
+  }
 
-          //根据距离设置像素颜色
-          if(distanceSquared <= outerRadiusSquared){
-              //如果在内部填充区域内，画填充颜色
-              image.setPixel(x, y, fillColor);
-          }
+  // 绘制白色边框（外层圆的边缘部分）
+  private static void drawCircleBorder(Image image, int centerX, int centerY, 
+                                      int radius, int borderWidth, Color borderColor) {
+    int outerRadius = radius + borderWidth; // 外层圆半径（包含边框）
+    for(int x = 0; x < image.width(); x++){
+      for (int y = 0; y < image.height(); y++){
+        int dx = x - centerX;
+        int dy = y - centerY;
+        int distanceSquared = dx * dx + dy * dy;
+        // 像素在边框范围内：外层圆内，但内层圆外（只保留边缘）
+        if (distanceSquared <= outerRadius * outerRadius 
+            && distanceSquared > radius * radius) {
+          image.setPixel(x, y, borderColor); // 白色边框
         }
       }
     }
-  }       
-}
+  }
+
+  private static Color getCircleColor(int row, int col, int totalRows, int totalCols){
+    float red = (float) col / totalCols;
+    float green = (float) row / totalRows;
+    float blue = 0.3f;
+    return new Color(red, green, blue);
+  }
+
+} 
