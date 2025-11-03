@@ -86,5 +86,4 @@ public class A01 {
     float blue = 0.3f;
     return new Color(red, green, blue);
   }
-
 } 
