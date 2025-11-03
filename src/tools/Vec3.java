@@ -67,4 +67,34 @@ public final record Vec3(double x, double y, double z) {
   public String toString() {
     return String.format("(Vec3: %.2f %.2f %.2f)", x, y, z);
   }
+
+  public Vec3 normalize() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'normalize'");
+  }
+
+  public Object multiply(double t) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'multiply'");
+}
+
+  public Vec3 add(Object multiply) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'add'");
+}
+
+  public Vec3 subtract(Vec3 c) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'subtract'");
+  }
+
+  public double dot(Vec3 d) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'dot'");
+}
+
+  public Vec3 subtract(double c) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'subtract'");
+}
 }
