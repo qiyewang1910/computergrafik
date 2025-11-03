@@ -36,5 +36,15 @@ public class Ray {
     public double tmax(){
         return tmax;
     }
+
+    public String origin() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'origin'");
+    }
+
+    public String direction() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'direction'");
+    }
     
 }
