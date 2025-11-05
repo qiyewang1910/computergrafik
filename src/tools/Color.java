@@ -36,4 +36,14 @@ public record Color(double r, double g, double b) {
     public String toString() {
         return String.format("(Color: %.2f %.2f %.2f)", r, g, b);
     }
+
+	public Color multiply(float f) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'multiply'");
+	}
+
+    public Color add(Color diffuse) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'add'");
+    }
 }

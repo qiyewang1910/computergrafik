@@ -9,4 +9,6 @@ public interface Image {
     public int width();
 
     public int height();
+
+    
 }

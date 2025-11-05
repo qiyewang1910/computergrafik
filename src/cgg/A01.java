@@ -9,12 +9,6 @@ public class A01 {
     int height = 600;
     Image image = new Image(width, height);
 
-    // 1. background black
-    for (int x = 0; x < width; x++){
-      for (int y = 0; y < image.height(); y++){
-        image.setPixel(x, y, Color.black);
-      }
-    }
 
     //2. 6*6 Rund
     int rows = 6;
@@ -46,9 +40,21 @@ public class A01 {
     image.writePng("a01");
 
   }  
-    
+   
+  //background is black
+  public static Image backgroundImage(int width, int height){
+    Image image = new Image(width, height);
+
+    for (int x = 0; x < width; x++){
+      for (int y = 0; y < height; y++){
+        image.setPixel(x, y, Color.black);
+      }
+    }
+    return image;
+  }
+
   //绘制单个圆
-  private static void drawCircle(Image image, int centerX, int centerY, int radius, Color color) {
+  public static void drawCircle(Image image, int centerX, int centerY, int radius, Color color) {
     for(int x =0; x< image.width(); x++){
       for (int y = 0; y < image.height(); y++){
         int dx = x - centerX;
@@ -63,7 +69,7 @@ public class A01 {
   }
 
   // 绘制白色边框（外层圆的边缘部分）
-  private static void drawCircleBorder(Image image, int centerX, int centerY, 
+  public static void drawCircleBorder(Image image, int centerX, int centerY, 
                                       int radius, int borderWidth, Color borderColor) {
     int outerRadius = radius + borderWidth; // 外层圆半径（包含边框）
     for(int x = 0; x < image.width(); x++){
@@ -80,10 +86,12 @@ public class A01 {
     }
   }
 
-  private static Color getCircleColor(int row, int col, int totalRows, int totalCols){
+  public static Color getCircleColor(int row, int col, int totalRows, int totalCols){
     float red = (float) col / totalCols;
     float green = (float) row / totalRows;
     float blue = 0.3f;
     return new Color(red, green, blue);
   }
+
+  
 } 

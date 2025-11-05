@@ -1,6 +1,11 @@
 package tools;
 
 import java.util.List;
+import tools.Color;
+import tools.Hit;
+import tools.Ray;
+import tools.Sphere;
+import tools.Vec2;
 
 public class SimpleRayTracer {
     private final SimpleCamera camera;
@@ -21,27 +26,26 @@ public class SimpleRayTracer {
         Ray ray = camera.generateRay(new Vec2(x,y));
 
         //2.查找射线与所有球体的最有效交点
-        Hit closesHit = null;
+        Hit closestHit = null;
         double minT = Double.POSITIVE_INFINITY;
+
         for (Sphere sphere : spheres){
             Hit hit = sphere.intersect(ray);
             if (hit != null && hit.t() < minT && ray.isWithinBounds(hit.t())){
                 minT = hit.t();
-                closesHit = hit;
+                closestHit = hit;
             }
         }
 
         // 3. 根据交点生成颜色
-        if (closesHit != null) {
-            return shade(closesHit); // 使用光照模型计算颜色
+        if (closestHit != null) {
+            return shade(closestHit); // 使用光照模型计算颜色
         } else {
             return backgroundColor;  // 无交点，返回背景色
         }
     }
 
-    private void generateRay(Vec2 vec2) {
-        // TODO
-    }
+
 
     /**
      * 光照模型：环境光 + 漫反射
@@ -58,7 +62,5 @@ public class SimpleRayTracer {
         return ambient.add(diffuse);
     }  
 
-    private void add(Color diffuse) {
-        // TODO
-    }
+    
 }

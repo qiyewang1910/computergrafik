@@ -45,56 +45,89 @@ public final record Vec3(double x, double y, double z) {
   }
 
   /**
-   * Returns the z-coordinate of the vector.
-   * This method is an alias for the z() method.
-   *
-   * @return The z-coordinate (w-component) of the vector.
+   * Returns the z-coordinate of the vector (alias for z()).
    */
   public double w() {
     return z;
   }
 
+  /**
+   * Converts the x and y components to a 2D vector.
+   */
   public Vec2 uv() {
     return vec2(x, y);
   }
 
   /**
-   * Returns a string representation of the vector.
-   *
-   * @return A string in the format "(Vec3: x.xx y.yy z.zz)".
+   * Returns the squared length of the vector (avoids sqrt for efficiency).
    */
-  @Override
-  public String toString() {
-    return String.format("(Vec3: %.2f %.2f %.2f)", x, y, z);
+  public double lengthSquared() {
+    return x * x + y * y + z * z;
   }
 
+  /**
+   * Returns the length (magnitude) of the vector.
+   */
+  public double length() {
+    return Math.sqrt(lengthSquared()); // 直接计算，不依赖外部方法
+  }
+
+  /**
+   * Normalizes the vector to a unit vector (length = 1).
+   * @return A new Vec3 with the same direction but length 1.
+   */
   public Vec3 normalize() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'normalize'");
+    double len = length();
+    if (len == 0) {
+      // 处理零向量（避免除以0，返回零向量）
+      return zero;
+    }
+    double invLen = 1.0 / len; // 计算长度的倒数（比除法更高效）
+    return vec3(x * invLen, y * invLen, z * invLen);
   }
 
-  public Object multiply(double t) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'multiply'");
-}
-
-  public Vec3 add(Object multiply) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'add'");
-}
-
-  public Vec3 subtract(Vec3 c) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'subtract'");
+  /**
+   * Multiplies the vector by a scalar.
+   * @param t The scalar to multiply by.
+   * @return A new Vec3 with components (x*t, y*t, z*t).
+   */
+  public Vec3 multiply(double t) {
+    return vec3(x * t, y * t, z * t);
+  }
+  /**
+   * Adds another vector to this vector.
+   * @param other The vector to add.
+   * @return A new Vec3 with components (x+other.x, y+other.y, z+other.z).
+   */
+  public Vec3 add(Vec3 other) {
+    return vec3(x + other.x, y + other.y, z + other.z);
   }
 
-  public double dot(Vec3 d) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'dot'");
-}
+  /**
+   * Subtracts another vector from this vector.
+   * @param other The vector to subtract.
+   * @return A new Vec3 with components (x-other.x, y-other.y, z-other.z).
+   */
+  public Vec3 subtract(Vec3 other) {
+    return vec3(x - other.x, y - other.y, z - other.z);
+  }
 
+  /**
+   * Subtracts a scalar from each component of the vector.
+   * @param c The scalar to subtract.
+   * @return A new Vec3 with components (x-c, y-c, z-c).
+   */
   public Vec3 subtract(double c) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'subtract'");
-}
+    return vec3(x - c, y - c, z - c);
+  }
+
+  /**
+   * Computes the dot product with another vector.
+   * @param other The other vector.
+   * @return The dot product (x*other.x + y*other.y + z*other.z).
+   */
+  public double dot(Vec3 other) {
+    return x * other.x + y * other.y + z * other.z;
+  }
+
 }

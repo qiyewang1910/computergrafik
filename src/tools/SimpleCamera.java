@@ -1,5 +1,9 @@
 package tools;
 
+import tools.Ray;
+import tools.Vec2;
+import tools.Vec3;
+
 public class SimpleCamera {
     private final double alpha;
     private final int width;
@@ -13,7 +17,7 @@ public class SimpleCamera {
         this.d = (width / 2.0) / Math.tan(alpha/2.0);
     }
 
-    public Ray generaeRay(Vec2 pixel){
+    public Ray generateRay(Vec2 pixel){
         //将像素坐标转换为图像平面的3D坐标
         double x3d = pixel.x() - width/2.0;
         double y3d = pixel.y() - height/2.0;
@@ -26,10 +30,10 @@ public class SimpleCamera {
         
     public static void main(String[] args){
         SimpleCamera cam = new SimpleCamera(Math.PI/2,10,10);
-        System.out.println(cam.generaeRay(new Vec2(0,0)));
-        System.out.println(cam.generaeRay(new Vec2(5,5)));
-        System.out.println(cam.generaeRay(new Vec2(10,10)));
-    }        
+        System.out.println(cam.generateRay(new Vec2(0,0)));
+        System.out.println(cam.generateRay(new Vec2(5,5)));
+        System.out.println(cam.generateRay(new Vec2(10,10)));
+    }      
             
 }
         
