@@ -16,8 +16,8 @@ public class Sphere {
         Vec3 oc = ray.x().subtract(c);
         double a = ray.d().dot(ray.d());
         double b = 2*oc.dot(ray.d());
-        double c = oc.dot(oc) - r*r;
-        double discriminant = b * b - 4 * a * c;
+        double c_quad = oc.dot(oc) - r*r;
+        double discriminant = b * b - 4 * a * c_quad;
 
         if (discriminant < 0){
             return null;

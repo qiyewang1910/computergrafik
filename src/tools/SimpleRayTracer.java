@@ -48,39 +48,38 @@ public class SimpleRayTracer {
     }
 
     /**
-     * 光照模型：环境光 + 漫反射 + 镜面反射 (Phong 模型)
+     * **最终修复的光照模型：强制高对比度和高光**
      */
     private Color shade(Hit hit){
         // 1. 定义光照参数
-        // 光源方向 
-        Vec3 lightDir = new Vec3(-0.5, 0.5, -1).normalize();
-        // 观察方向 (从交点指向相机原点(0,0,0)，也就是反向的 Ray.d())
-        Vec3 viewDir = hit.p().multiply(-1).normalize(); 
+        // 光源方向 (使用您最新的左上方光源)
+        Vec3 lightDir = new Vec3(0.5, 0.5, 1).normalize();
         
-        // 2. 环境光 (Ambient)
+        // **修复：使用固定的 View Vector (近似于 (0, 0, 1)) 来消除浮点误差**
+        // 相机沿负Z轴看，物体在负Z轴，视线方向是Z轴正向
+        Vec3 viewDir = new Vec3(0, 0, 1).normalize(); 
+        
+        // 2. 环境光: 0.05f 产生深阴影
         float ambientStrength = 0.05f;
         Color ambient = hit.color().multiply(ambientStrength);
 
-        // 3. 漫反射 (Diffuse)
-        // 漫反射强度 = max(法向量 dot 光源向量, 0)
+        // 3. 漫反射 (产生明暗分割)
         double diffuseFactor = Math.max(0, hit.normal().dot(lightDir));
-        float diffuseStrength = 0.8f; // 调整漫反射强度
+        float diffuseStrength = 0.7f; 
         Color diffuse = hit.color().multiply((float) (diffuseStrength * diffuseFactor));
 
-        // 4. 镜面反射
-        // a. 计算反射光方向 (R = 2 * (N dot L) * N - L)
-        Vec3 incomingLight = lightDir.multiply(-1);
-        Vec3 reflectedLight = reflect(hit.normal(), incomingLight);
+        // 4. 镜面反射 (产生高光)
+        Vec3 incomingLight = lightDir.multiply(-1); 
+        Vec3 reflectedLight = reflect(hit.normal(), incomingLight); 
         
-        double specularExponent = 100.0; // 极高 Ns 产生锐利高光
+        double specularExponent = 200.0; // 极高 Ns 产生锐利高光
         double specularFactor = Math.pow(Math.max(0, reflectedLight.dot(viewDir)), specularExponent); 
         
         Color specularColor = Color.white; 
-        float specularStrength = 1.0f; // 保证高光可见
+        float specularStrength = 2.0f; // 强制高光强度到 2.0f
         Color specular = specularColor.multiply((float) (specularStrength * specularFactor));
 
-        // 5. 最终颜色 = 环境光 + 漫反射 + 镜面反射
+        // 5. 最终颜色
         return ambient.add(diffuse).add(specular);
     }   
-    
 }
