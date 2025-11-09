@@ -1,5 +1,6 @@
 package cgg;
 
+import cgg.Image;
 import java.util.ArrayList;
 import java.util.List;
 import tools.Color;
@@ -9,19 +10,20 @@ import tools.Sphere;
 import tools.Vec3;
 
 
-
 public class A02 {
 
   public static void main(String[] args){
 
     SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600);
 
-    createSphereGrid(6,6);
+    List<Sphere> spheres = createSphereGrid(6, 6); // 调用上面的方法
 
-    SimpleRayTracer rayTracer = new SimpleRayTracer(camera, null, Color.black);
+    Color backgroundColor = new Color(0.1f, 0.1f, 0.1f);
+    SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, Color.black);
 
    
     Image image = new Image(600,600);
+
     for (int y = 0; y < 600; y++) {
         for (int x = 0; x < 600; x++) {
             // 计算当前像素颜色（光线追踪核心）
@@ -45,6 +47,7 @@ public class A02 {
 
     private static List<Sphere> createSphereGrid(int rows, int cols) {
         List<Sphere> spheres = new ArrayList<>();
+
         double radius = 1.2; // 球体半径（统一大小，保持网格整齐）
         double spacing = 4.0; // 球体间距（3D空间中）
         double zPos = -25; // 所有球体在同一深度（z轴，远离相机）
