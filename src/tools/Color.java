@@ -37,13 +37,26 @@ public record Color(double r, double g, double b) {
         return String.format("(Color: %.2f %.2f %.2f)", r, g, b);
     }
 
-	public Color multiply(float f) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'multiply'");
-	}
-
-    public Color add(Color diffuse) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'add'");
+	/**
+     * 颜色乘以系数（用于调整亮度，如光照强度）
+     * @param factor 亮度系数（如 0.1 表示10%亮度）
+     * @return 新的颜色，分量为原分量 × factor
+     */
+    public Color multiply(float factor) {
+        double f = factor;
+        // 直接计算，不限制范围（去掉 clamp）
+        return color(r * f, g * f, b * f);
     }
+
+
+    /**
+     * 颜色相加（用于混合环境光和漫反射光）
+     * @param other 另一种颜色（如漫反射色）
+     * @return 新的颜色，分量为两颜色分量之和
+     */
+    public Color add(Color other) {
+        // 直接相加，不限制范围（去掉 clamp）
+        return color(r + other.r, g + other.g, b + other.b);
+    }
+
 }

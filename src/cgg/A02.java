@@ -48,9 +48,9 @@ public class A02 {
     private static List<Sphere> createSphereGrid(int rows, int cols) {
         List<Sphere> spheres = new ArrayList<>();
 
-        double radius = 1.2; // 球体半径（统一大小，保持网格整齐）
+        double radius = 1.3; // 球体半径（统一大小，保持网格整齐）
         double spacing = 4.0; // 球体间距（3D空间中）
-        double zPos = -25; // 所有球体在同一深度（z轴，远离相机）
+        double zPos = -24; // 所有球体在同一深度（z轴，远离相机）
 
         // 计算网格中心偏移（让网格居中显示）
         double centerOffsetX = (cols - 1) * spacing / 2.0;
