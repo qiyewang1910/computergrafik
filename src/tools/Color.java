@@ -44,7 +44,6 @@ public record Color(double r, double g, double b) {
      */
     public Color multiply(float factor) {
         double f = factor;
-        // 直接计算，不限制范围（去掉 clamp）
         return color(r * f, g * f, b * f);
     }
 
@@ -55,7 +54,6 @@ public record Color(double r, double g, double b) {
      * @return 新的颜色，分量为两颜色分量之和
      */
     public Color add(Color other) {
-        // 直接相加，不限制范围（去掉 clamp）
         return color(r + other.r, g + other.g, b + other.b);
     }
 

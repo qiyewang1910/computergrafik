@@ -16,7 +16,7 @@ public class A02 {
 
     SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600);
 
-    List<Sphere> spheres = createSphereGrid(6, 6); // 调用上面的方法
+    List<Sphere> spheres = createSphereGrid(6, 6); 
 
     Color backgroundColor = new Color(0.1f, 0.1f, 0.1f);
     SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, Color.black);
