@@ -36,8 +36,7 @@ public class SimpleCamera {
     }
 
     public Vec3 position() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'position'");
+        return new Vec3(0, 0, 0);  // 直接返回相机位置
     }      
             
 }

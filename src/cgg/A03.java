@@ -4,6 +4,7 @@ import cgg.Image;
 import java.util.ArrayList;
 import java.util.List;
 import tools.Color;
+import tools.Lichtquelle;
 import tools.Plane;
 import tools.SimpleCamera;
 import tools.SimpleRayTracer;
@@ -24,9 +25,30 @@ public class A03 {
         double planeYMin = -6;
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
 
-        Color backgroundColor = new Color(0.1, 0.1,1);
+        // 4. 背景色
+        Color backgroundColor = new Color(0.1, 0.1, 1);
 
-        SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, groundPlane, backgroundColor, new ArrayList<>());
+        // 5. 添加光源（就在这里！）
+        List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表（非null）
+        
+        // 5.1 添加方向光源（如太阳光，从左上方向下照射）
+        Vec3 lichtRichtung = new Vec3(-1, -1, -1).normalize();  // 光源方向（归一化）
+        Color lichtIntensitaet = new Color(1.0f, 1.0f, 1.0f);   // 白光强度
+        lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
+        
+        // 5.2 （可选）添加点光源（如灯泡，在场景上方）
+        Vec3 punktLichtPos = new Vec3(0, 10, -15);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(0.5f, 0.5f, 0.5f);  // 点光源强度
+        lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
+
+        // 6. 创建光线追踪器（传入光源列表）
+        SimpleRayTracer rayTracer = new SimpleRayTracer(
+            camera,
+            spheres,
+            groundPlane,
+            backgroundColor,
+            lichtquellen  // 这里传入上面创建的光源列表
+        );
 
     Image image = new Image(600,600);
     for (int y = 0; y < 600; y++) {

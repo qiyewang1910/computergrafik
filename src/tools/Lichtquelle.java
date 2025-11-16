@@ -6,6 +6,16 @@ import tools.Vec3;
 public interface Lichtquelle {
     Vec3 richtung(Vec3 punkt);
     Color einfallend(Vec3 punkt);
+
+    // 工厂方法：创建方向光源（外部包通过接口调用，无需访问内部类）
+    static Lichtquelle createRichtungslicht(Vec3 richtung, Color intensitaet) {
+        return new Richtungslichtquelle(richtung, intensitaet);
+    }
+
+    // 工厂方法：创建点光源
+    static Lichtquelle createPunktlicht(Vec3 position, Color intensitaet) {
+        return new Punktlichtquelle(position, intensitaet);
+    }
 }
 
 // 平行光源

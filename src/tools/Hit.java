@@ -30,8 +30,7 @@ public class Hit {
         return color;
     }
 
-    public Vec3 position() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'position'");
+    public Vec3 position(){
+        return p;
     }  
 }
