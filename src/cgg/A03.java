@@ -15,16 +15,16 @@ import tools.Vec3;
 public class A03 {
     
     public static void main(String[] args){
-        Vec3 cameraPos = new Vec3(5,10,20);  //Y越大越高，Z越负越远
+        Vec3 cameraPos = new Vec3(0,8,4);  //Y越大越高，Z越负越远
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos);
 
         List<Sphere> spheres = createSphereGrid(4,4);
 
-        Vec3 planeCenter = new Vec3(0,10,-10); //球心位置
+        Vec3 planeCenter = new Vec3(0,0,-10); //球心位置
         double planeRadius = 180;   //球心半径
         Color planeColor = new Color(0.1, 0.5, 0.8);
-        double planeYMin = 4;  //保留y在3以上的位置
-        Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
+        double planeYMin = 2;  //保留y在3以上的位置
+        Plane groundPlane = new Plane(planeCenter, 20, planeColor, planeYMin);
 
         // 4. 背景色
         Color backgroundColor = new Color(0.8, 0.8, 1);
@@ -38,7 +38,7 @@ public class A03 {
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（如灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(-2, 10, -20);  // 点光源位置（球体上方）
+        Vec3 punktLichtPos = new Vec3(-2, -10, -20);  // 点光源位置（球体上方）
         Color punktLichtIntens = new Color(0.5f, 0.5f, 0.5f);  // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 

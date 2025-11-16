@@ -42,7 +42,7 @@ public class Plane {
         // 选择有效交点（t>0 且位于yMin上方，模拟地面部分）
         if (t1 > 0) {
             Vec3 p1 = ray.x().add(ray.d().multiply(t1)); // 计算t1对应的点
-            if (p1.y() >= yMin) {
+            if (p1.y() <= yMin) {
                 t = t1;
             }
         }
