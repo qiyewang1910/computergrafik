@@ -62,4 +62,16 @@ public record Color(double r, double g, double b) {
         throw new UnsupportedOperationException("Unimplemented method 'multiply'");
     }
 
+    public static Color black() {
+        return new Color(0,0,0)
+    }
+
+    public Color multiplyWithColor(Color other) {
+        return new Color(
+            this.r * other.r,
+            this.g * other.g,
+            this.b * other.b
+        );
+    }
+
 }

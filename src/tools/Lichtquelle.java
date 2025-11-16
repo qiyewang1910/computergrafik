@@ -1,55 +1,56 @@
 package tools;
 
-public class Lichtquelle {
-    Vec3 direction(Vec3 x) {
-        return null;
-    }
-    Color incoming(Vec3 x) {
-        return null;
-    }
+import tools.Color;
+import tools.Vec3;
 
-    //内部类 方向光源
-    static class Richtungslichtquelle implements Lichtquelle{
-        private final Vec3 richtung;
-        private final Color intensitaet;
+public interface Lichtquelle {
+    Vec3 richtung(Vec3 punkt);
+    Color einfallend(Vec3 punkt);
+}
 
-        public Richtungslichtquelle(Vec3 richtung, Color intensitaet){
-            this.richtung = Vec3.normalize();
-            this.intensitaet = intensitaet;
-        }
+// 平行光源
+class Richtungslichtquelle implements Lichtquelle {
+    private final Vec3 richtung;
+    private final Color intensitaet;
 
-        @Override
-        public Vec3 direction(Vec3 x){
-            return this.richtung;
-        }
-
-        @Override
-        public Color incoming(Vec3 x){
-            return this.intensitaet;
-        }
+    public Richtungslichtquelle(Vec3 richtung, Color intensitaet) {
+        
+        this.richtung = richtung.normalize(); 
+        this.intensitaet = intensitaet;
     }
 
-    //点光源
-    static class Punktlichtquelle implements Lichtquelle{
-        private final Vec3 position;
-        private final Color intensitaet;
+    @Override
+    public Vec3 richtung(Vec3 punkt) {
+        return richtung;
+    }
 
-        public Punktlichtquelle(Vec3 position, Color intensitaet){
-            this.position = position;
-            this.intensitaet = intensitaet;
-        }
+    @Override
+    public Color einfallend(Vec3 punkt) {
+        return intensitaet;
+    }
+}
 
-        @Override
-        public Vec3 direction(Vec3 x){
-            Vec3 vecFromXToLight = Vec3.subtract(this.position, x);
-            return Vec3.normalize(vecFromXToLight);
-        }
+// 点光源
+class Punktlichtquelle implements Lichtquelle {
+    private final Vec3 position;
+    private final Color intensitaet;
 
-        @Override
-        public Color incoming(Vec3 x){
-            double distance = Vec3.length(Vec3.subtract(this.position));
-            double attenuation = 1.0 / (distance * distance);
-            return Color.multiply(this.intensitaet, attenuation);
-        }
+    public Punktlichtquelle(Vec3 position, Color intensitaet) {
+        this.position = position;
+        this.intensitaet = intensitaet;
+    }
+
+    @Override
+    public Vec3 richtung(Vec3 punkt) {
+        Vec3 vecVonPunktZuLicht = position.subtract(punkt); 
+        return vecVonPunktZuLicht.normalize(); 
+    }
+
+    @Override
+    public Color einfallend(Vec3 punkt) {
+        Vec3 abstandsVec = position.subtract(punkt); 
+        double abstand = abstandsVec.length(); 
+        double daempfung = 1.0 / (abstand * abstand + 1e-6);
+        return intensitaet.multiply((float) daempfung);
     }
 }

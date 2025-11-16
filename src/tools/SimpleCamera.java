@@ -33,6 +33,11 @@ public class SimpleCamera {
         System.out.println(cam.generateRay(new Vec2(0,0)));
         System.out.println(cam.generateRay(new Vec2(5,5)));
         System.out.println(cam.generateRay(new Vec2(10,10)));
+    }
+
+    public Vec3 position() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'position'");
     }      
             
 }
