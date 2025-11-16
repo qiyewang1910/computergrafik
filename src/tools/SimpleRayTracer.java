@@ -20,7 +20,7 @@ public class SimpleRayTracer {
     private final List<Lichtquelle> lichtquelle;
     private final Plane ground;
 
-   // 构造方法：参数顺序和初始化修正
+    // 构造方法：初始化场景组件
     public SimpleRayTracer(
         SimpleCamera camera, 
         List<Sphere> spheres, 
@@ -30,151 +30,158 @@ public class SimpleRayTracer {
     ) {
         this.camera = camera;
         this.spheres = spheres;
-        this.ground = groundPlane;  
+        this.ground = groundPlane;
         this.backgroundColor = backgroundColor;
         this.lichtquelle = lichtquelle;
     }             
-                        
-                    
-     /**
-     * 为像素（x，y）计算颜色
+
+    /**
+     * 计算像素(x, y)的颜色
      */
-    public Color getColor(int x, int y){
-        //1.生成从相机到像素（x,y）的射线
-        Ray ray = camera.generateRay(new Vec2(x,y));
-                    
-        //2.查找射线与所有球体的最有效交点
+    public Color getColor(int x, int y) {
+        // 1. 生成从相机到像素的射线
+        Ray ray = camera.generateRay(new Vec2(x, y));
+
+        // 2. 查找射线与所有物体的最近交点
         Hit closestHit = null;
         double minT = Double.POSITIVE_INFINITY;
-            
-        //检测与球体的相交
-        for (Sphere sphere : spheres){
+
+        // 检测与球体的相交
+        for (Sphere sphere : spheres) {
             Hit hit = sphere.intersect(ray);
-            if (hit != null && hit.t() < minT && ray.isWithinBounds(hit.t())){
-                minT = hit.t();
-                closestHit = hit;
+            if (hit != null) {
+                double t = hit.t();
+                if (t < minT && ray.isWithinBounds(t)) {
+                    minT = t;
+                    closestHit = hit;
+                }
             }
-        }    
-        
+        }
+
         // 检测与地面的相交
         if (ground != null) {
-            Hit groundHit = ground.hit(ray);  // 调用Plane的hit方法
-            if (groundHit != null && groundHit.t() < minT && ray.isWithinBounds(groundHit.t())) {
-                minT = groundHit.t();
-                closestHit = groundHit;
+            Hit groundHit = ground.hit(ray);
+            if (groundHit != null) {
+                double t = groundHit.t();
+                if (t < minT && ray.isWithinBounds(t)) {
+                    minT = t;
+                    closestHit = groundHit;
+                }
             }
         }
-                                       
-        // 3. 根据交点生成颜色
-        if (closestHit != null) {
-            return shade(closestHit); // 使用光照模型计算颜色
-        } else {
-            return backgroundColor;  // 无交点，返回背景色
-        }
-    }                                        
-                    
-    /**
-     * **最终修复的光照模型：强制高对比度和高光**
-     */
-    private Color shade(Hit hit){
 
+        // 3. 计算交点颜色或返回背景色
+        if (closestHit != null) {
+            Color shadedColor = shade(closestHit);
+            // 若Color类有clamp方法则调用，否则直接返回（兼容无clamp的情况）
+            try {
+                return shadedColor.clamp();
+            } catch (NoSuchMethodError e) {
+                return shadedColor;
+            }
+        } else {
+            return backgroundColor;
+        }
+    }
+
+    private void clamp() {
+        // TODO
+    }
+
+    /**
+     * 光照计算：环境光 + 漫反射 + 镜面反射 + 阴影
+     */
+    private Color shade(Hit hit) {
         Vec3 p = hit.position();       // 交点坐标
-        Vec3 n = hit.normal().normalize(); // 交点法向量（球体/地面的法向量）
-        Vec3 v = camera.position().subtract(p).normalize(); // 视线方向
+        Vec3 n = hit.normal().normalize();  // 法向量（归一化）
+        Vec3 v = camera.position().subtract(p).normalize();  // 视线方向
         Color objColor = hit.color();  // 物体颜色
 
-        // 1.环境光: 0.05f 产生深阴影
-        float umgebungsStaerke = 0.05f;
-        Color umgebungslicht = hit.color().multiply(umgebungsStaerke);
-                    
-        // 漫反射 (产生明暗分割)
-        Color diffuserTermTotal = Color.black();
-        Color spiegelnderTermTotal = Color.black();
-                    
-        // 2. 遍历所有光源，计算每个光源的贡献
+        // 1. 环境光
+        float ambientStrength = 0.05f;
+        Color ambient = objColor.multiply(ambientStrength);
+
+        // 漫反射和镜面反射总和
+        Color diffuseTotal = Color.black();
+        Color specularTotal = Color.black();
+
+        // 2. 遍历所有光源
         for (Lichtquelle licht : lichtquelle) {
-            // 关键：检测当前光源是否被遮挡（阴影）
+            // 检测阴影：被遮挡则跳过该光源
             if (isInShadow(p, n, licht)) {
-                continue; // 光源被遮挡，不贡献光照
+                continue;
             }
+
             // 光源方向（从交点到光源）和强度
-            Vec3 l = licht.richtung(p).normalize(); // 光源方向l
-            Color lightIntensity = licht.einfallend(p); // 光源强度（含衰减）
+            Vec3 l = licht.richtung(p).normalize();
+            Color lightIntensity = licht.einfallend(p);
 
             // 3. 漫反射（兰伯特定律）
-            double dotNL = Math.max(0, n.dot(l)); // n·l（确保非负）
+            double dotNL = Math.max(0, n.dot(l));  // 避免背面受光
             float diffuseStrength = 0.7f;
             Color diffuse = objColor
-                .multiply(diffuseStrength * (float) dotNL) // k_d * (n·l)
-                .multiplyWithColor(lightIntensity); // 乘以光源强度
-            diffuserTermTotal = diffuserTermTotal.add(diffuse);
+                .multiply(diffuseStrength * (float) dotNL)
+                .multiplyWithColor(lightIntensity);
+            diffuseTotal = diffuseTotal.add(diffuse);
 
             // 4. 镜面反射（Phong模型）
-            Vec3 r = reflect(l, n); // 反射方向r = 2*(n·l)*n - l（使用reflect工具函数）
-            double dotRV = Math.max(0, r.dot(v)); // r·v（确保非负）
-            float specularStrength = 0.5f;
-            double shininess = 100; // 高光指数（值越大，高光越集中）
+            Vec3 r = reflect(l, n);  // 反射方向
+            double dotRV = Math.max(0, r.dot(v));  // 反射方向与视线夹角
+            float specularStrength = 1.0f;
+            double shininess = 200;  // 高光集中度
             Color specular = lightIntensity
-                .multiply(specularStrength * (float) Math.pow(dotRV, shininess)); // k_s*(r·v)^n
-            spiegelnderTermTotal = spiegelnderTermTotal.add(specular);
+                .multiply(specularStrength * (float) Math.pow(dotRV, shininess));
+            specularTotal = specularTotal.add(specular);
         }
 
-    
-        // 5. 最终颜色 = 环境光 + 漫反射 + 镜面反射
-        return umgebungslicht.add(diffuserTermTotal).add(spiegelnderTermTotal);
-    }    
+        // 5. 最终颜色合成
+        return ambient.add(diffuseTotal).add(specularTotal);
+    }
 
     /**
-     * 检测交点p是否在光源licht的阴影中
-     * @param p 交点坐标
-     * @param n 交点法向量（用于偏移射线起点）
-     * @param licht 光源
-     * @return true=在阴影中，false=不在阴影中
+     * 检测交点是否在光源的阴影中
      */
-
-     private boolean isInShadow(Vec3 p, Vec3 n, Lichtquelle licht) {
-        // 1. 阴影射线起点：沿法向量偏移微小距离（避免自遮挡）
-        double epsilon = 0.001; // 偏移量，防止射线与自身物体相交
+    private boolean isInShadow(Vec3 p, Vec3 n, Lichtquelle licht) {
+        // 1. 阴影射线起点：沿法向量偏移（避免自遮挡）
+        double epsilon = 0.001;
         Vec3 shadowOrigin = p.add(n.multiply(epsilon));
 
-        // 2. 阴影射线方向和最大距离（tMax）
+        // 2. 计算阴影射线方向和最大距离
         Vec3 shadowDir;
         double tMax;
 
         if (licht.isPunktlicht()) {
-            // 点光源：射线方向指向光源位置，tMax为到光源的距离（减epsilon）
+            // 点光源：射线指向光源位置
             Vec3 lightPos = licht.getPosition();
-            Vec3 toLight = lightPos.subtract(p); // 从交点到光源的向量
+            Vec3 toLight = lightPos.subtract(p);
             shadowDir = toLight.normalize();
-            tMax = toLight.length() - epsilon; // 不超过光源位置
+            tMax = toLight.length() - epsilon;  // 不超过光源位置
         } else {
-            // 方向光源：射线方向与光源方向一致，tMax为无穷大
-            shadowDir = licht.richtung(p).normalize(); // 从交点指向光源
+            // 方向光源：射线方向与光源方向一致
+            shadowDir = licht.richtung(p).normalize();
             tMax = Double.POSITIVE_INFINITY;
         }
 
-        // 3. 创建阴影射线（起点、方向、tMin=epsilon，tMax=计算值）
+        // 3. 创建阴影射线
         Ray shadowRay = new Ray(shadowOrigin, shadowDir, epsilon, tMax);
 
-        // 4. 检测阴影射线是否与球体相交
+        // 4. 检测与球体的遮挡
         for (Sphere sphere : spheres) {
             Hit hit = sphere.intersect(shadowRay);
-            if (hit != null && shadowRay.isWithinBounds(hit.t())) { // 新增t范围判断
-                return true;
+            if (hit != null && shadowRay.isWithinBounds(hit.t())) {
+                return true;  // 被球体遮挡
             }
         }
 
-        // 5. 检测阴影射线是否与地面相交
+        // 5. 检测与地面的遮挡
         if (ground != null) {
             Hit groundHit = ground.hit(shadowRay);
-            if (groundHit != null && shadowRay.isWithinBounds(groundHit.t())) { // 新增t范围判断
-                return true;
+            if (groundHit != null && shadowRay.isWithinBounds(groundHit.t())) {
+                return true;  // 被地面遮挡
             }
         }
 
-        // 6. 无遮挡，不在阴影中
+        // 6. 无遮挡
         return false;
     }
-
 }
-

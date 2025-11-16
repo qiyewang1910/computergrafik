@@ -44,7 +44,7 @@ public class ReinhardGlobalTmo {
     }
 
     private double averageLuminance(Image img) {
-        var sum = 0;
+        var sum = 0.0;
         var n = img.width() * img.height();
         for (int x = 0; x != img.width(); x++) {
             for (int y = 0; y != img.height(); y++) {
