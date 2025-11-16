@@ -130,4 +130,8 @@ public final record Vec3(double x, double y, double z) {
     return x * other.x + y * other.y + z * other.z;
   }
 
+  public Vec3 negate() {
+    return new Vec3(-x, -y, -z);
+}
+
 }

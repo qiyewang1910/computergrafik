@@ -15,32 +15,34 @@ import tools.Vec3;
 public class A03 {
     
     public static void main(String[] args){
-        SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600);
+        Vec3 cameraPos = new Vec3(0,50, -80);  //Y越大越高，Z越负越远
+        SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos);
 
         List<Sphere> spheres = createSphereGrid(4,4);
 
-        Vec3 planeCenter = new Vec3(0,-5,-10);
-        double planeRadius = 50; 
-        Color planeColor = new Color(0.2, 0.2, 0.2);
-        double planeYMin = -6;
+        Vec3 planeCenter = new Vec3(0,10,-10); //球心位置
+        double planeRadius = 250;   //球心半径
+        Color planeColor = new Color(0.1, 0.5, 0.8);
+        double planeYMin = 5;  //保留y在3以上的位置
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
 
         // 4. 背景色
-        Color backgroundColor = new Color(0.1, 0.1, 1);
+        Color backgroundColor = new Color(0.8, 0.8, 1);
 
-        // 5. 添加光源（就在这里！）
+        // 5. 添加光源
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表（非null）
         
-        // 5.1 添加方向光源（如太阳光，从左上方向下照射）
-        Vec3 lichtRichtung = new Vec3(-1, -1, -1).normalize();  // 光源方向（归一化）
+        // 5.1 添加方向光源（如太阳光）
+        Vec3 lichtRichtung = new Vec3(-0.5, -0.6, 0.1).normalize();  // 光源方向
         Color lichtIntensitaet = new Color(1.0f, 1.0f, 1.0f);   // 白光强度
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
-        // 5.2 （可选）添加点光源（如灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(0, 10, -15);  // 点光源位置（球体上方）
+        // 5.2 添加点光源（如灯泡，在场景上方）
+        Vec3 punktLichtPos = new Vec3(0, 10, -20);  // 点光源位置（球体上方）
         Color punktLichtIntens = new Color(0.5f, 0.5f, 0.5f);  // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
+    
         // 6. 创建光线追踪器（传入光源列表）
         SimpleRayTracer rayTracer = new SimpleRayTracer(
             camera,
@@ -68,7 +70,7 @@ public class A03 {
         List<Sphere> spheres = new ArrayList<>();
         double radius = 1.5;
         double spacing = 4.0;
-        double yPos = 0;
+        double yPos = 2 + radius;
 
         // 计算中心偏移，使矩阵居中
         double centerOffsetX = (cols - 1) * spacing / 2.0;

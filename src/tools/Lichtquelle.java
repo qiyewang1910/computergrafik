@@ -7,12 +7,15 @@ public interface Lichtquelle {
     Vec3 richtung(Vec3 punkt);
     Color einfallend(Vec3 punkt);
 
-    // 工厂方法：创建方向光源（外部包通过接口调用，无需访问内部类）
+    boolean isPunktlicht();
+    Vec3 getPosition();
+
+    // 创建方向光源（外部包通过接口调用，无需访问内部类）
     static Lichtquelle createRichtungslicht(Vec3 richtung, Color intensitaet) {
         return new Richtungslichtquelle(richtung, intensitaet);
     }
 
-    // 工厂方法：创建点光源
+    // 创建点光源
     static Lichtquelle createPunktlicht(Vec3 position, Color intensitaet) {
         return new Punktlichtquelle(position, intensitaet);
     }
@@ -31,12 +34,25 @@ class Richtungslichtquelle implements Lichtquelle {
 
     @Override
     public Vec3 richtung(Vec3 punkt) {
-        return richtung;
+        // 方向光源：返回"从交点指向光源"的方向（与存储的照射方向相反）
+        return richtung.negate(); 
     }
 
     @Override
     public Color einfallend(Vec3 punkt) {
         return intensitaet;
+    }
+
+    // 方向光源返回false
+    @Override
+    public boolean isPunktlicht() {
+        return false;
+    }
+
+    // 方向光源无位置，返回null
+    @Override
+    public Vec3 getPosition() {
+        return null;
     }
 }
 
@@ -62,5 +78,17 @@ class Punktlichtquelle implements Lichtquelle {
         double abstand = abstandsVec.length(); 
         double daempfung = 1.0 / (abstand * abstand + 1e-6);
         return intensitaet.multiply((float) daempfung);
+    }
+
+    // 点光源返回true
+    @Override
+    public boolean isPunktlicht() {
+        return true;
+    }
+
+    // 返回点光源位置
+    @Override
+    public Vec3 getPosition() {
+        return position;
     }
 }

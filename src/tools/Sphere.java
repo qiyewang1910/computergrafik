@@ -1,5 +1,9 @@
 package tools;
 
+import tools.Color;
+import tools.Hit;
+import tools.Ray;
+import tools.Vec3;
 
 public class Sphere {
     private final Vec3 c;
@@ -41,12 +45,9 @@ public class Sphere {
         return new Hit(t, point, normal, color);
     }
 
-    private void dot(Vec3 vec3) {
-        // TODO
-    }
-
-    private void x() {
-        // TODO
+     // 新增：获取球体颜色（供光照计算使用）
+    public Color getColor() {
+        return this.color;
     }
 
 }

@@ -8,7 +8,7 @@ public class Ray {
 
     public Ray(Vec3 x, Vec3 d, double tmin, double tmax){
         this.x = x;
-        this.d = d;
+        this.d = d.normalize();
         this.tmin = tmin;
         this.tmax = tmax;
     }
