@@ -18,8 +18,8 @@ public class A02 {
 
     List<Sphere> spheres = createSphereGrid(6, 6); 
 
-    Color backgroundColor = new Color(0.1f, 0.1f, 0.1f);
-    SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, Color.black);
+    new Color(0.1f, 0.1f, 0.1f);
+    SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, Color.black, null, null);
 
    
     Image image = new Image(600,600);

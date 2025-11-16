@@ -1,8 +1,12 @@
 package tools;
 
 public class Lichtquelle {
-    Vec3 direction(Vec3 x);
-    Color incoming(Vec3 x);
+    Vec3 direction(Vec3 x) {
+        return null;
+    }
+    Color incoming(Vec3 x) {
+        return null;
+    }
 
     //内部类 方向光源
     static class Richtungslichtquelle implements Lichtquelle{
@@ -10,7 +14,7 @@ public class Lichtquelle {
         private final Color intensitaet;
 
         public Richtungslichtquelle(Vec3 richtung, Color intensitaet){
-            this.richtung = Vec3.normalize(richtung);
+            this.richtung = Vec3.normalize();
             this.intensitaet = intensitaet;
         }
 
@@ -43,7 +47,7 @@ public class Lichtquelle {
 
         @Override
         public Color incoming(Vec3 x){
-            double distance = Vec3.length(Vec3.subtract(this.position, x));
+            double distance = Vec3.length(Vec3.subtract(this.position));
             double attenuation = 1.0 / (distance * distance);
             return Color.multiply(this.intensitaet, attenuation);
         }

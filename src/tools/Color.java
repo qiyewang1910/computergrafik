@@ -57,4 +57,9 @@ public record Color(double r, double g, double b) {
         return color(r + other.r, g + other.g, b + other.b);
     }
 
+    public static Color multiply(Color intensitaet, double attenuation) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'multiply'");
+    }
+
 }

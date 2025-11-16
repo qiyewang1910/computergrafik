@@ -3,21 +3,35 @@ package tools;
 import java.util.List;
 import tools.Color;
 import tools.Hit;
+import tools.Lichtquelle;
+import tools.Plane;
 import tools.Ray;
 import tools.Sphere;
 import tools.Vec2;
 import tools.Vec3;
+
+
 import static tools.Functions.*;
 
 public class SimpleRayTracer {
     private final SimpleCamera camera;
     private final List<Sphere> spheres;
     private final Color backgroundColor;
+    private final List<Lichtquelle> lichtquelle;
+    private final Plane ground;
 
-    public SimpleRayTracer(SimpleCamera camera, List<Sphere> spheres, Color backgroundColor){
-        this.camera = camera;
-        this.spheres = spheres;
-        this.backgroundColor = backgroundColor;
+    public SimpleRayTracer(
+        SimpleCamera camera, 
+        List<Sphere> spheres, 
+        Color backgroundColor,        
+        Plane ground,
+        List<Lichtquelle> lichtquelle
+    ){
+            this.camera = camera;
+            this.spheres = spheres;
+            this.backgroundColor = backgroundColor;
+            this.ground = ground;
+            this.lichtquelle = lichtquelle;
     }
 
     /**
@@ -51,8 +65,7 @@ public class SimpleRayTracer {
      * **最终修复的光照模型：强制高对比度和高光**
      */
     private Color shade(Hit hit){
-        // 1. 定义光照参数
-        // 光源方向 (使用您最新的左上方光源)
+        // 光源方向 (使用左上方光源)
         Vec3 lightDir = new Vec3(0.5, 0.5, 1).normalize();
         
         // **修复：使用固定的 View Vector (近似于 (0, 0, 1)) 来消除浮点误差**
@@ -66,18 +79,23 @@ public class SimpleRayTracer {
         // 3. 漫反射 (产生明暗分割)
         double diffuseFactor = Math.max(0, hit.normal().dot(lightDir));
         float diffuseStrength = 0.7f; 
-        Color diffuse = hit.color().multiply((float) (diffuseStrength * diffuseFactor));
+        Color diffuse = hit.color()
+            .multiply((float) (diffuseStrength * diffuseFactor))
+            .multiply(lightIntensity);
+        diffuseTotal = diffuseTotal.add(diffuse);
 
         // 4. 镜面反射 (产生高光)
-        Vec3 incomingLight = lightDir.multiply(-1); 
-        Vec3 reflectedLight = reflect(hit.normal(), incomingLight); 
+        Vec3 incomingLight = lightDir.multiply(-1); //入射方向
+        Vec3 reflectedLight = reflect(hit.normal(), incomingLight); //反射方向
+        Vec3 viewDir = camera.position().subtract(hit.position()).normalize();
+
         
         double specularExponent = 200.0; // 极高 Ns 产生锐利高光
         double specularFactor = Math.pow(Math.max(0, reflectedLight.dot(viewDir)), specularExponent); 
-        
-        Color specularColor = Color.white; 
         float specularStrength = 2.0f; // 强制高光强度到 2.0f
-        Color specular = specularColor.multiply((float) (specularStrength * specularFactor));
+        Color specularColor = lightIntensity
+            .multiply((float)(specularStrength * specularFactor));
+        specularTotal = specularTotal.add(specular); 
 
         // 5. 最终颜色
         return ambient.add(diffuse).add(specular);
