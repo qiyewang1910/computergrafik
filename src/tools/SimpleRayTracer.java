@@ -159,8 +159,7 @@ public class SimpleRayTracer {
         // 4. 检测阴影射线是否与球体相交
         for (Sphere sphere : spheres) {
             Hit hit = sphere.intersect(shadowRay);
-            if (hit != null) {
-                // 有球体遮挡，返回在阴影中
+            if (hit != null && shadowRay.isWithinBounds(hit.t())) { // 新增t范围判断
                 return true;
             }
         }
@@ -168,8 +167,7 @@ public class SimpleRayTracer {
         // 5. 检测阴影射线是否与地面相交
         if (ground != null) {
             Hit groundHit = ground.hit(shadowRay);
-            if (groundHit != null) {
-                // 有地面遮挡，返回在阴影中
+            if (groundHit != null && shadowRay.isWithinBounds(groundHit.t())) { // 新增t范围判断
                 return true;
             }
         }
