@@ -26,7 +26,7 @@ public class A03 {
 
         Color backgroundColor = new Color(0.1, 0.1,1);
 
-        SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, groundPlane, backgroundColor, null);
+        SimpleRayTracer rayTracer = new SimpleRayTracer(camera, spheres, groundPlane, backgroundColor, new ArrayList<>());
 
     Image image = new Image(600,600);
     for (int y = 0; y < 600; y++) {

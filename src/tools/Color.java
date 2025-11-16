@@ -63,7 +63,7 @@ public record Color(double r, double g, double b) {
     }
 
     public static Color black() {
-        return new Color(0,0,0)
+        return new Color(0,0,0);
     }
 
     public Color multiplyWithColor(Color other) {
