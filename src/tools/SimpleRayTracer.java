@@ -4,10 +4,8 @@ import java.util.List;
 import tools.Color;
 import tools.Hit;
 import tools.Lichtquelle;
-import tools.Plane;
 import tools.Ray;
 import tools.SimpleCamera;
-import tools.Sphere;
 import tools.Vec2;
 import tools.Vec3;
 
@@ -15,22 +13,20 @@ import static tools.Functions.reflect;
 
 public class SimpleRayTracer {
     private final SimpleCamera camera;
-    private final List<Sphere> spheres;
+    private final List<Shape> scene;
     private final Color backgroundColor;
     private final List<Lichtquelle> lichtquelle;
-    private final Plane ground;
+
 
     // 构造方法：初始化场景组件
     public SimpleRayTracer(
         SimpleCamera camera, 
-        List<Sphere> spheres, 
-        Plane groundPlane,  
+        List<Shape> scene, 
         Color backgroundColor,        
         List<Lichtquelle> lichtquelle
     ) {
         this.camera = camera;
-        this.spheres = spheres;
-        this.ground = groundPlane;
+        this.scene = scene;
         this.backgroundColor = backgroundColor;
         this.lichtquelle = lichtquelle;
     }             
@@ -46,9 +42,9 @@ public class SimpleRayTracer {
         Hit closestHit = null;
         double minT = Double.POSITIVE_INFINITY;
 
-        // 检测与球体的相交
-        for (Sphere sphere : spheres) {
-            Hit hit = sphere.intersect(ray);
+        // 遍历scene中所有形状（包括球体、地面、Group）
+        for (Shape shape : scene) {
+            Hit hit = shape.intersect(ray); // 调用每个Shape的intersect方法
             if (hit != null) {
                 double t = hit.t();
                 if (t < minT && ray.isWithinBounds(t)) {
@@ -58,17 +54,7 @@ public class SimpleRayTracer {
             }
         }
 
-        // 检测与地面的相交
-        if (ground != null) {
-            Hit groundHit = ground.hit(ray);
-            if (groundHit != null) {
-                double t = groundHit.t();
-                if (t < minT && ray.isWithinBounds(t)) {
-                    minT = t;
-                    closestHit = groundHit;
-                }
-            }
-        }
+    
 
         // 3. 计算交点颜色或返回背景色
         if (closestHit != null) {
@@ -84,9 +70,7 @@ public class SimpleRayTracer {
         }
     }
 
-    private void clamp() {
-        // TODO
-    }
+    
 
     /**
      * 光照计算：环境光 + 漫反射 + 镜面反射 + 阴影
@@ -127,8 +111,8 @@ public class SimpleRayTracer {
             // 4. 镜面反射（Phong模型）
             Vec3 r = reflect(l, n);  // 反射方向
             double dotRV = Math.max(0, r.dot(v));  // 反射方向与视线夹角
-            float specularStrength = 1.0f;
-            double shininess = 200;  // 高光集中度
+            float specularStrength = 0.7f;
+            double shininess = 60;  // 高光集中度
             Color specular = lightIntensity
                 .multiply(specularStrength * (float) Math.pow(dotRV, shininess));
             specularTotal = specularTotal.add(specular);
@@ -166,20 +150,13 @@ public class SimpleRayTracer {
         Ray shadowRay = new Ray(shadowOrigin, shadowDir, epsilon, tMax);
 
         // 4. 检测与球体的遮挡
-        for (Sphere sphere : spheres) {
-            Hit hit = sphere.intersect(shadowRay);
+        for (Shape shape : scene) {
+            Hit hit = shape.intersect(shadowRay);
             if (hit != null && shadowRay.isWithinBounds(hit.t())) {
-                return true;  // 被球体遮挡
+                return true; // 被任何形状遮挡
             }
         }
 
-        // 5. 检测与地面的遮挡
-        if (ground != null) {
-            Hit groundHit = ground.hit(shadowRay);
-            if (groundHit != null && shadowRay.isWithinBounds(groundHit.t())) {
-                return true;  // 被地面遮挡
-            }
-        }
 
         // 6. 无遮挡
         return false;

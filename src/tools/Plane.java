@@ -3,9 +3,10 @@ package tools;
 import tools.Color;
 import tools.Hit;
 import tools.Ray;
+import tools.Shape;
 import tools.Vec3;
 
-public class Plane {
+public class Plane implements Shape {
     private final Vec3 center;    // 球面中心
     private final double radius;  // 球面半径
     private final Color color;    // 地面颜色
@@ -18,8 +19,10 @@ public class Plane {
         this.yMin = yMin;
     }
 
+    // 新增：方法名从hit改为intersect，添加@Override
+    @Override
     // 检测射线与弧形平面（球面上半部分）的相交
-    public Hit hit(Ray ray) {
+    public Hit intersect (Ray ray) {
         // 球面方程：(p - center)·(p - center) = radius²
         Vec3 oc = ray.x().subtract(center); // 射线原点到球心的向量（ray.x()是原点）
 

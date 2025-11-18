@@ -5,7 +5,7 @@ import tools.Hit;
 import tools.Ray;
 import tools.Vec3;
 
-public class Sphere {
+public class Sphere implements Shape {
     private final Vec3 c;
     private final double r;
     private final Color color;
@@ -16,6 +16,7 @@ public class Sphere {
         this.color = color;
     }
 
+    @Override
     public Hit intersect(Ray ray){
         Vec3 oc = ray.x().subtract(c);
         double a = ray.d().dot(ray.d());

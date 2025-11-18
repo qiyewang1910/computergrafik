@@ -32,14 +32,14 @@ public class A03 {
         // 5. 添加光源
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表（非null）
         
-        // 5.1 添加方向光源（如太阳光）
-        Vec3 lichtRichtung = new Vec3(-5, -1, -0.9).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(1.0f, 1.0f, 1.0f);   // 白光强度
+        // 5.1 添加方向光源（太阳光）
+        Vec3 lichtRichtung = new Vec3(5, -1, -0.9).normalize();  // 光源方向
+        Color lichtIntensitaet = new Color(2.0f, 2.0f, 1.0f);   // 白光强度
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
-        // 5.2 添加点光源（如灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(12, 20, 20);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(0.8f, 0.8f, 0.5f);  // 点光源强度
+        // 5.2 添加点光源（灯泡，在场景上方）
+        Vec3 punktLichtPos = new Vec3(-1, 38, -80);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(1, 1, 0.5f);  // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
     
@@ -68,8 +68,8 @@ public class A03 {
      */
     private static List<Sphere> createSphereGrid(int rows, int cols) {
         List<Sphere> spheres = new ArrayList<>();
-        double radius = 1.4;
-        double spacing = 4.0;
+        double radius = 1.8;
+        double spacing = 4.5;
         double yPos = 1 + radius;
 
         // 计算中心偏移，使矩阵居中
