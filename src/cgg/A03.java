@@ -15,16 +15,16 @@ import tools.Vec3;
 public class A03 {
     
     public static void main(String[] args){
-        Vec3 cameraPos = new Vec3(0,12,7);  //Y越大越高，Z越负越远
+        Vec3 cameraPos = new Vec3(0,10,7);  //Y越大越高，Z越负越远
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos);
 
         List<Sphere> spheres = createSphereGrid(4,4);
 
-        Vec3 planeCenter = new Vec3(0,-17,-28); //球心位置
-        double planeRadius = 2000;   //球心半径
+        Vec3 planeCenter = new Vec3(0,-197.8,-28); //球心位置
+        double planeRadius = 200;   //球心半径
         Color planeColor = new Color(0.1, 0.5, 0.8);
-        double planeYMin = 3;  //保留y在3以上的位置
-        Plane groundPlane = new Plane(planeCenter, 20, planeColor, planeYMin);
+        double planeYMin = 5;  
+        Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
 
         // 4. 背景色
         Color backgroundColor = new Color(0.8, 0.8, 1);
@@ -33,13 +33,13 @@ public class A03 {
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表（非null）
         
         // 5.1 添加方向光源（如太阳光）
-        Vec3 lichtRichtung = new Vec3(-5, -0.1, -0.3).normalize();  // 光源方向
+        Vec3 lichtRichtung = new Vec3(-5, -1, -0.9).normalize();  // 光源方向
         Color lichtIntensitaet = new Color(1.0f, 1.0f, 1.0f);   // 白光强度
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（如灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(2, 10, 20);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(0.5f, 0.5f, 0.5f);  // 点光源强度
+        Vec3 punktLichtPos = new Vec3(12, 20, 20);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(0.8f, 0.8f, 0.5f);  // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
     
@@ -68,9 +68,9 @@ public class A03 {
      */
     private static List<Sphere> createSphereGrid(int rows, int cols) {
         List<Sphere> spheres = new ArrayList<>();
-        double radius = 1.5;
+        double radius = 1.4;
         double spacing = 4.0;
-        double yPos = 2 + radius;
+        double yPos = 1 + radius;
 
         // 计算中心偏移，使矩阵居中
         double centerOffsetX = (cols - 1) * spacing / 2.0;
@@ -80,7 +80,7 @@ public class A03 {
             for (int col = 0; col < cols; col++) {
                 // XZ平面排列，col控制x轴，row控制z轴
                 double x = col * spacing - centerOffsetX;
-                double z = -(row * spacing - centerOffsetZ) - 18;
+                double z = -(row * spacing - centerOffsetZ) - 24;
                 Vec3 center = new Vec3(x, yPos, z);
 
                 // 根据行列计算球体颜色

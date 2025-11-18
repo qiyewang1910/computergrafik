@@ -11,7 +11,7 @@ public class SimpleCamera {
     private final double d;      // 成像平面距离
     private final Vec3 position; // 相机位置（成员变量）
 
-    // 构造方法：初始化相机参数，包括位置
+    // 初始化相机参数，包括位置
     public SimpleCamera(double alpha, int width, int height, Vec3 position) {
         this.alpha = alpha;
         this.width = width;
