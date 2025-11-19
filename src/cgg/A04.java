@@ -40,16 +40,16 @@ public class A04 {
         
         // 5.1 添加方向光源（太阳光）
         Vec3 lichtRichtung = new Vec3(5, -1, -0.9).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(2.0f, 2.0f, 1.0f);   // 白光强度
+        Color lichtIntensitaet = new Color(1.0f, 1.0f, 1.0f);   
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(5, -2, -1);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(1, 1, 1f);  // 点光源强度
+        Vec3 punktLichtPos = new Vec3(5, 0, -1);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(10, 10, 10); 
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
     
-        // 6. 创建光线追踪器（传入光源列表）
+        // 6. 光线追踪（传入光源列表）
         SimpleRayTracer rayTracer = new SimpleRayTracer(
             camera,
             scene,
@@ -69,7 +69,7 @@ public class A04 {
 }    
 
 
-// 放在A04.java的类内部，作为工具方法
+
 private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color) {
     Group snowman = new Group();
     
@@ -78,10 +78,10 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
     snowman.addChild(baseSphere);
     
     // 上小球（半径为大球的1/2，位置在正上方）
-    double topRadius = baseRadius / 2;
+    double topRadius = 1.4;
     Vec3 topCenter = new Vec3(
         baseCenter.x(), 
-        baseCenter.y() + baseRadius + topRadius, // y轴偏移：大球半径+小球半径
+        baseCenter.y() + baseRadius + topRadius -0.5, // y轴偏移：大球半径+小球半径
         baseCenter.z()
     );
     Sphere topSphere = new Sphere(topCenter, topRadius, color);
@@ -90,14 +90,14 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
     return snowman;
 }
 
-// 创建4×4雪人矩阵
+// 4×4雪人矩阵
     private static List<Shape> createSnowmanGrid(int rows, int cols) {
         List<Shape> shapes = new ArrayList<>();
         double baseRadius = 1.8; // 保留原大球半径
         double spacing = 4.5;    // 保留原间距
         double yPos = 1 + baseRadius; // 下大球的y位置（原球体y坐标）
 
-        // 中心偏移计算（保持矩阵居中，不变）
+        // 中心偏移 保持矩阵居中不变
         double centerOffsetX = (cols - 1) * spacing / 2.0;
         double centerOffsetZ = (rows - 1) * spacing / 2.0;
 

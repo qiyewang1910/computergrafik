@@ -77,7 +77,7 @@ public class SimpleRayTracer {
      */
     private Color shade(Hit hit) {
         Vec3 p = hit.position();       // 交点坐标
-        Vec3 n = hit.normal().normalize();  // 法向量（归一化）
+        Vec3 n = hit.normal().normalize();  // 法向量归一
         Vec3 v = camera.position().subtract(p).normalize();  // 视线方向
         Color objColor = hit.color();  // 物体颜色
 
@@ -153,10 +153,9 @@ public class SimpleRayTracer {
         for (Shape shape : scene) {
             Hit hit = shape.intersect(shadowRay);
             if (hit != null && shadowRay.isWithinBounds(hit.t())) {
-                return true; // 被任何形状遮挡
+                return false; // 被任何形状遮挡
             }
         }
-
 
         // 6. 无遮挡
         return false;
