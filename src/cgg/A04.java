@@ -62,8 +62,8 @@ public class A04 {
         }
 
         // 创建立方体
-        Quader box = new Quader(6, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
-        Mat44 boxTrans = Mat44.translate(-5, 3, -62); // Y=3：底部贴地面（6/2=3）             
+        Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
+        Mat44 boxTrans = Mat44.translate(-1, 0.6, -54); // Y=3：底部贴地面（6/2=3）             
         box.setTransform(boxTrans);
         scene.add(box);
 
