@@ -25,30 +25,29 @@ public class A04 {
         List<Shape> snowmen = createSnowmanGrid(4, 4); 
         scene.addAll(snowmen);
 
-        Vec3 planeCenter = new Vec3(0,-197.8,-28); //球心位置
+        Vec3 planeCenter = new Vec3(0,-200,-22); //球心位置
         double planeRadius = 200;   //球心半径
-        Color planeColor = new Color(0.1, 0.5, 0.8);
+        Color planeColor = new Color(0.5, 0.5, 0.5);
         double planeYMin = 5;  
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
         scene.add(groundPlane); // 地面加入场景
 
         // 4. 背景色
-        Color backgroundColor = new Color(1, 1, 1);
+        Color backgroundColor = new Color(0, 0, 0);
 
         // 5. 添加光源
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表
         
         // 5.1 添加方向光源（太阳光）
-        Vec3 lichtRichtung = new Vec3(5, -1, -0.9).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(1.0f, 1.0f, 1.0f);   
+        Vec3 lichtRichtung = new Vec3(-5, -11, -2).normalize();  // 光源方向
+        Color lichtIntensitaet = new Color(0.7f, 0.7f, 0.7f);   
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(5, 0, -1);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(10, 10, 10); 
+        Vec3 punktLichtPos = new Vec3(0, 10, -20);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(5, 10, 10); 
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
-    
         // 6. 光线追踪（传入光源列表）
         SimpleRayTracer rayTracer = new SimpleRayTracer(
             camera,
@@ -90,12 +89,13 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
     return snowman;
 }
 
+
 // 4×4雪人矩阵
     private static List<Shape> createSnowmanGrid(int rows, int cols) {
         List<Shape> shapes = new ArrayList<>();
         double baseRadius = 1.8; // 保留原大球半径
-        double spacing = 4.5;    // 保留原间距
-        double yPos = 1 + baseRadius; // 下大球的y位置（原球体y坐标）
+        double spacing = 4.6;    // 保留原间距
+        double yPos = baseRadius; // 下大球的y位置（原球体y坐标）
 
         // 中心偏移 保持矩阵居中不变
         double centerOffsetX = (cols - 1) * spacing / 2.0;
@@ -105,7 +105,7 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
             for (int col = 0; col < cols; col++) {
                 // 计算下大球位置（原球体位置，不变）
                 double x = col * spacing - centerOffsetX;
-                double z = -(row * spacing - centerOffsetZ) - 22;
+                double z = -(row * spacing - centerOffsetZ) - 21;
                 Vec3 baseCenter = new Vec3(x, yPos, z);
 
                 // 按列设置颜色（偶数列黑，奇数列白）
@@ -117,7 +117,5 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
         }
         return shapes;
     }
-
-
-    
+ 
 }
