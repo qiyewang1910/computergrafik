@@ -9,6 +9,7 @@ import tools.Lichtquelle;
 import tools.Mat44;
 import tools.Plane;
 import tools.Quader;
+import tools.ReinhardGlobalTmo;
 import tools.Shape;
 import tools.SimpleCamera;
 import tools.SimpleRayTracer;
@@ -24,62 +25,57 @@ public class A04 {
         Vec3 cameraTarget = new Vec3(15,10, -22); // 看向场景中心
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
-        // 拆分黑白小人作为组
+    
         List<Shape> scene = new ArrayList<>();
 
         // 循环创建多个4×4雪人矩阵
-        int matrixCount = 4; // 要创建的矩阵数量（比如4个）
-        double matrixSpacing = 60; // 矩阵之间的前后间距（Z轴）
+        int matrixCount = 6; // 要创建的矩阵数量（比如4个）
+        double matrixSpacing = 30; // 矩阵之间的前后间距
         for (int i = 0; i < matrixCount; i++) {
-        // 每个矩阵封装为独立Group
-        Group snowmanMatrixGroup = new Group();
+            // 每个矩阵封装为独立Group
+            Group snowmanMatrixGroup = new Group();
 
+            Group blackSnowmanGroup = new Group();
+            // 1. 黑色雪人组：
+            Mat44 blackTrans = Mat44.scale(1, 1, 1)
+                                    .multiply(Mat44.rotateY(0))
+                                    .multiply(Mat44.translate(1, 0, -1));
+            blackSnowmanGroup.setTransform(blackTrans);
+            // 2. 白色雪人组：
+            Group whiteSnowmanGroup = new Group();
+            Mat44 whiteTrans = Mat44.scale(1, 1, 1)
+                                    .multiply(Mat44.rotateY(0))
+                                    .multiply(Mat44.translate(1.1, 0, 3.2));
+            whiteSnowmanGroup.setTransform(whiteTrans);
 
-        Group blackSnowmanGroup = new Group();
-        Group whiteSnowmanGroup = new Group();
-        // 1. 黑色雪人组：
-        Mat44 blackTrans = Mat44.scale(1, 1, 1)
-                                .multiply(Mat44.rotateY(0))
-                                .multiply(Mat44.translate(1, 0, -1));
-        blackSnowmanGroup.setTransform(blackTrans);
+            createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
+            snowmanMatrixGroup.addChild(blackSnowmanGroup);
+            snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
-        // 2. 白色雪人组：
-        Mat44 whiteTrans = Mat44.scale(1, 1, 1)
-                                .multiply(Mat44.rotateY(0))
-                                .multiply(Mat44.translate(1.1, 0, 3.2));
-        whiteSnowmanGroup.setTransform(whiteTrans);
+            // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
+            double zOffset = -21 + i * matrixSpacing; // 基于原Z轴偏移，叠加矩阵间距
+            Mat44 matrixTrans = Mat44.translate(0, 0, zOffset);
+            snowmanMatrixGroup.setTransform(matrixTrans);
 
+            scene.add(snowmanMatrixGroup);  // 加入场景
+        }
 
-        createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
-        snowmanMatrixGroup.addChild(blackSnowmanGroup);
-        snowmanMatrixGroup.addChild(whiteSnowmanGroup);
-
-        // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
-        double zOffset = -21 + i * matrixSpacing; // 基于原Z轴偏移，叠加矩阵间距
-        Mat44 matrixTrans = Mat44.translate(0, 0, zOffset);
-        snowmanMatrixGroup.setTransform(matrixTrans);
-
-        // 加入场景
-        scene.add(snowmanMatrixGroup);
-
-        scene.add(blackSnowmanGroup);
-        scene.add(whiteSnowmanGroup);
-
-        // 创建6x6x6立方体
+        // 创建立方体
         Quader box = new Quader(6, new Color(0.1, 0.5, 0.9)); // 6x6x6正方体，蓝色
-        Mat44 boxTrans = Mat44.translate(-12, 3, -30); // Y=3：底部贴地面（6/2=3）
+        Mat44 boxTrans = Mat44.translate(-12, 3, -30); // Y=3：底部贴地面（6/2=3）             
         box.setTransform(boxTrans);
         scene.add(box);
 
-
-
+        // 创建地面平面
         Vec3 planeCenter = new Vec3(0,-300,-22); //球心位置
         double planeRadius = 300;   //球心半径
-        Color planeColor = new Color(0.3, 0.3, 0.3);
-        double planeYMin = 5;  
+        Color planeColor = new Color(0.3, 0.3, 0.3);            
+        double planeYMin = 6;  
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
         scene.add(groundPlane); // 地面加入场景
-
+    
+             
+        
         // 4. 背景色
         Color backgroundColor = new Color(0, 0, 0);
 
@@ -112,9 +108,10 @@ public class A04 {
             }
         }
 
+        new ReinhardGlobalTmo(0.005).toneMap(image);
         image.writePng("a04");
         }
-    }    
+       
 
     private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color) {
         Group snowman = new Group();

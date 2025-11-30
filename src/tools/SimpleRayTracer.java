@@ -33,19 +33,33 @@ public class SimpleRayTracer {
     }             
 
 
-    /**
-     * 计算像素(x, y)的颜色
-     */
     public Color getColor(int x, int y) {
         // 1. 生成从相机到像素的射线
         Ray ray = camera.generateRay(new Vec2(x, y));
+        
         // 2. 查找射线与所有物体的最近交点
+        Hit closestHit = findClosestHit(ray);
+
+        // 3. 计算交点颜色或返回背景色
+        if (closestHit != null) {
+            Color shadedColor = shade(closestHit);
+            return shadedColor.clamp();
+        } else {
+            return backgroundColor;
+        }
+    }
+    
+    /**
+     * 查找射线与场景中所有形状的最近交点
+     */
+    private Hit findClosestHit(Ray ray) {
         Hit closestHit = null;
         double minT = Double.POSITIVE_INFINITY;
 
-        // 遍历scene中所有形状（包括球体、地面、Group）
         for (Shape shape : scene) {
-            Hit hit = shape.intersect(ray); // 调用每个Shape的intersect方法
+            if (shape == null) continue;
+            
+            Hit hit = shape.intersect(ray);
             if (hit != null) {
                 double t = hit.t();
                 if (t < minT && ray.isWithinBounds(t)) {
@@ -54,27 +68,11 @@ public class SimpleRayTracer {
                 }
             }
         }
-
-    
-
-        // 3. 计算交点颜色或返回背景色
-        if (closestHit != null) {
-            Color shadedColor = shade(closestHit);
-            // 若Color类有clamp方法则调用，否则直接返回（兼容无clamp的情况）
-            try {
-                return shadedColor.clamp();
-            } catch (NoSuchMethodError e) {
-                return shadedColor;
-            }
-        } else {
-            return backgroundColor;
-        }
+        return closestHit;
     }
 
-    
-
     /**
-     * 工具方法：从Shape中获取颜色（适配Sphere/Plane的getColor()）
+     * 工具方法：从Shape中获取颜色
      */
     private Color getShapeColor(Shape shape) {
         if (shape == null) {
@@ -90,7 +88,7 @@ public class SimpleRayTracer {
         }
         // Group默认灰色
         else if (shape instanceof Group) {
-            return new Color(0.5, 0.5, 0.5);
+            return ((Ebene) shape).getColor();
         }
         // 未知形状默认白色
         else {
@@ -109,15 +107,22 @@ public class SimpleRayTracer {
         Color objColor = getShapeColor(hit.shape());
 
         // 环境光
-        float ambientStrength = 0.08f;
+        float ambientStrength = 0.1f;
         Color ambient = objColor.multiply(ambientStrength);
 
         // 漫反射 + 镜面反射
         Color diffuseTotal = Color.black();
         Color specularTotal = Color.black();
 
+        // 如果没有光源，只返回环境光
+        if (lichtquelle == null || lichtquelle.isEmpty()) {
+            return ambient;
+        }
+
         // 遍历所有光源
         for (Lichtquelle licht : lichtquelle) {
+            if (licht == null) continue;
+
             // 检测阴影：被遮挡则跳过该光源
             if (isInShadow(p, n, licht)) {
                 continue;
@@ -131,20 +136,20 @@ public class SimpleRayTracer {
             double dotPktDiffus = Math.max(0, n.dot(l));  // 避免背面受光
             float diffuseStrength = 0.7f;
             Color diffuse = objColor
-                .multiply(diffuseStrength * (float) dotPktDiffus)
+                .multiply(diffuseStrength * dotPktDiffus)
                 .multiplyWithColor(lightIntensity);
             diffuseTotal = diffuseTotal.add(diffuse);
 
             
             // 4. Spiegelnder Term
-            if (!licht.isPunktlicht()) {
+           // if (!licht.isPunktlicht()) {
             Vec3 einfallsRichtung = l.multiply(-1).normalize();  // 入射方向
-            Vec3 r = reflect(einfallsRichtung, n).normalize(); // 反射方向
+            Vec3 r = reflect(n, einfallsRichtung).normalize(); // 反射方向
             Vec3 blickRichtung = camera.position().subtract(p).normalize(); // 视线方向
 
             // Color ankommendeIntensitaet = licht.einfallend(p);   //入射光强
             Color spiegelnderReflexionskoeffizient = new Color(1.0,1.0,1.0);    //镜面反射系数
-            float spiegelungsStaerke = 0.8f;  // 镜面反射强度
+            float spiegelungsStaerke = 0.4f;  // 镜面反射强度
             double glanzExponent = 30;    //高光指数（越大越集中）
                 
 
@@ -154,7 +159,7 @@ public class SimpleRayTracer {
                 .multiply((float) Math.pow(dotPkt, glanzExponent))
                 .multiplyWithColor(spiegelnderReflexionskoeffizient);
             specularTotal = specularTotal.add(spiegelnderTerm);    
-            }
+            //}
         }
 
         // 5. 最终颜色合成
@@ -176,6 +181,8 @@ public class SimpleRayTracer {
         if (licht.isPunktlicht()) {
             // 点光源：射线指向光源位置
             Vec3 lightPos = licht.getPosition();
+            if (lightPos == null) return false;
+
             Vec3 toLight = lightPos.subtract(p);
             shadowDir = toLight.normalize();
             tMax = toLight.length() - epsilon;  // 不超过光源位置
