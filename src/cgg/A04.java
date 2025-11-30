@@ -21,7 +21,7 @@ public class A04 {
     
     public static void main(String[] args){
 
-        Vec3 cameraPos = new Vec3(28,25,-80);  // 平移，Y越大越高，Z越负越远
+        Vec3 cameraPos = new Vec3(23,25,-68);  // 平移，Y越大越高，Z越负越远
         Vec3 cameraTarget = new Vec3(15,10, -22); // 看向场景中心
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
@@ -53,6 +53,13 @@ public class A04 {
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
+            // 创建立方体（作为矩阵的一部分）
+            Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
+            // 调整立方体在矩阵中的位置（相对于矩阵的局部坐标）
+            Mat44 boxTrans = Mat44.translate(-1, 0.4, -58); // 这里的坐标是相对于当前矩阵的偏移
+            box.setTransform(boxTrans);
+            snowmanMatrixGroup.addChild(box); // 加入当前矩阵组
+
             // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
             double zOffset = -21 + i * matrixSpacing; // 基于原Z轴偏移，叠加矩阵间距
             Mat44 matrixTrans = Mat44.translate(0, 0, zOffset);
@@ -63,7 +70,7 @@ public class A04 {
 
         // 创建立方体
         Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
-        Mat44 boxTrans = Mat44.translate(-1, 0.6, -54); // Y=3：底部贴地面（6/2=3）             
+        Mat44 boxTrans = Mat44.translate(-1, 0.4, -54); // Y=3：底部贴地面（6/2=3）             
         box.setTransform(boxTrans);
         scene.add(box);
 
