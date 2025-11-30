@@ -31,6 +31,7 @@ public class A04 {
         // 循环创建多个4×4雪人矩阵
         int matrixCount = 6; // 要创建的矩阵数量（比如4个）
         double matrixSpacing = 30; // 矩阵之间的前后间距
+
         for (int i = 0; i < matrixCount; i++) {
             // 每个矩阵封装为独立Group
             Group snowmanMatrixGroup = new Group();
@@ -61,8 +62,8 @@ public class A04 {
         }
 
         // 创建立方体
-        Quader box = new Quader(6, new Color(0.1, 0.5, 0.9)); // 6x6x6正方体，蓝色
-        Mat44 boxTrans = Mat44.translate(-12, 3, -30); // Y=3：底部贴地面（6/2=3）             
+        Quader box = new Quader(6, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
+        Mat44 boxTrans = Mat44.translate(-5, 3, -62); // Y=3：底部贴地面（6/2=3）             
         box.setTransform(boxTrans);
         scene.add(box);
 
@@ -101,7 +102,12 @@ public class A04 {
         );
 
         Image image = new Image(600,600);
+        System.out.println("start rendering...");
+
         for (int y = 0; y < 600; y++) {
+            if(y % 100 == 0){
+                System.out.println("doing: "+ (y * 100 / 600 ) + "% ");
+            }
             for (int x = 0; x < 600; x++){
                 Color pixelColor = rayTracer.getColor(x, y);
                 image.setPixel(x,y, pixelColor);

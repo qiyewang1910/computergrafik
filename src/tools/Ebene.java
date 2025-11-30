@@ -1,6 +1,10 @@
 package tools;
 
 import tools.Color;
+import tools.Hit;
+import tools.Ray;
+import tools.Shape;
+import tools.Vec3;
 
 public class Ebene implements Shape {
     public enum Ausdehnung { UNBEGRENZT, KREISRUND, QUADRATISCH }
@@ -44,10 +48,14 @@ public class Ebene implements Shape {
         // 范围判断（仅X/Z轴）
         boolean inBounds = switch (typ) {
             case UNBEGRENZT -> true;
-            case KREISRUND -> hitPos.x()*hitPos.x() + hitPos.z()*hitPos.z() <= parameter*parameter + 1e-9;
+            case KREISRUND -> {
+                double distSq = hitPos.x() * hitPos.x() + hitPos.z() * hitPos.z();
+                yield distSq <= parameter * parameter + 1e-9;
+            }
             case QUADRATISCH -> {
-                double halb = parameter/2.0;
-                yield Math.abs(hitPos.x()) <= halb + 1e-9 && Math.abs(hitPos.z()) <= halb + 1e-9;
+                double halb = parameter / 2.0;
+                yield Math.abs(hitPos.x()) <= halb + 1e-9 && 
+                      Math.abs(hitPos.z()) <= halb + 1e-9;
             }
         };
         if (!inBounds) return null;
