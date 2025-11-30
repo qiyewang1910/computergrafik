@@ -315,6 +315,23 @@ public final class Mat44 {
     }
 
     /**
+     * 创建绕X轴旋转矩阵（弧度制）
+     */
+    public static Mat44 rotateX(double angle) {
+        Mat44 mat = new Mat44();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        // 绕X轴旋转矩阵（列主序）
+        mat.set(1, 1, cos);
+        mat.set(1, 2, sin);
+        mat.set(2, 1, -sin);
+        mat.set(2, 2, cos);
+        mat.set(0, 0, 1.0);
+        mat.set(3, 3, 1.0);
+        return mat;
+    }
+
+    /**
      * 创建平移矩阵（支持int/double参数）
      */
     public static Mat44 translate(double tx, double ty, double tz) {
@@ -337,6 +354,12 @@ public final class Mat44 {
 
 
     private double[] values;
+
+
+    public static Mat44 rotateZ(double rz) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'rotateZ'");
+    }
 }
 
 

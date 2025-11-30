@@ -130,8 +130,17 @@ public final record Vec3(double x, double y, double z) {
     return x * other.x + y * other.y + z * other.z;
   }
 
+  // 添加：叉乘方法
+  public Vec3 cross(Vec3 other) {
+    double cx = y * other.z - z * other.y;
+    double cy = z * other.x - x * other.z;
+    double cz = x * other.y - y * other.x;
+    return new Vec3(cx, cy, cz);
+  }
+
+
   public Vec3 negate() {
     return new Vec3(-x, -y, -z);
-}
+  }
 
 }
