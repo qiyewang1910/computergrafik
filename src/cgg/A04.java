@@ -6,6 +6,7 @@ import java.util.List;
 import tools.Color;
 import tools.Group;
 import tools.Lichtquelle;
+import tools.Mat44;
 import tools.Plane;
 import tools.Shape;
 import tools.SimpleCamera;
@@ -20,14 +21,26 @@ public class A04 {
 
         Vec3 cameraPos = new Vec3(25,20,-50);  // 平移，Y越大越高，Z越负越远
         Vec3 cameraTarget = new Vec3(14,5, -16); // 看向场景中心
-
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
         // 拆分黑白小人作为组
         List<Shape> scene = new ArrayList<>();
-
         Group blackSnowmanGroup = new Group();
         Group whiteSnowmanGroup = new Group();
+
+        // 给Group添加组合变换 
+        // 1. 黑色雪人组：先缩放1.2倍 → 绕Y轴旋转30度 → 右移10单位
+        Mat44 blackTrans = Mat44.scale(1, 1, 1)
+                                .multiply(Mat44.rotateY(0))
+                                .multiply(Mat44.translate(1, 0, -1));
+        blackSnowmanGroup.setTransform(blackTrans);
+
+        // 2. 白色雪人组：先缩小0.8倍 → 绕Y轴旋转-30度 → 左移5单位+上移2单位
+        Mat44 whiteTrans = Mat44.scale(1, 1, 1)
+                                .multiply(Mat44.rotateY(0))
+                                .multiply(Mat44.translate(1.1, 0, 3.2));
+        whiteSnowmanGroup.setTransform(whiteTrans);
+
 
         createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
 
@@ -75,6 +88,8 @@ public class A04 {
 
         image.writePng("a04");
     }    
+
+    
 
 
 

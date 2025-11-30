@@ -19,6 +19,11 @@ public class Plane implements Shape {
         this.yMin = yMin;
     }
 
+    // 补充：获取平面颜色（必须加）
+    public Color getColor() {
+        return this.color;
+    }
+
     // 新增：方法名从hit改为intersect，添加@Override
     @Override
     // 检测射线与弧形平面（球面上半部分）的相交
@@ -68,7 +73,7 @@ public class Plane implements Shape {
             normal = normal.multiply(-1);
         }
 
-        return new Hit(t, position, normal, color);
+        return new Hit(t, position, normal, this);
     }
 
     // 保留原有的color()方法（不修改命名）

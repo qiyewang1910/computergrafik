@@ -32,13 +32,13 @@ public class SimpleRayTracer {
         this.lichtquelle = lichtquelle;
     }             
 
+
     /**
      * 计算像素(x, y)的颜色
      */
     public Color getColor(int x, int y) {
         // 1. 生成从相机到像素的射线
         Ray ray = camera.generateRay(new Vec2(x, y));
-
         // 2. 查找射线与所有物体的最近交点
         Hit closestHit = null;
         double minT = Double.POSITIVE_INFINITY;
@@ -74,12 +74,39 @@ public class SimpleRayTracer {
     
 
     /**
+     * 工具方法：从Shape中获取颜色（适配Sphere/Plane的getColor()）
+     */
+    private Color getShapeColor(Shape shape) {
+        if (shape == null) {
+            return Color.black(); // 空值默认黑色
+        }
+        // 适配Sphere的getColor()方法
+        if (shape instanceof Sphere) {
+            return ((Sphere) shape).getColor();
+        }
+        // 适配Plane的getColor()方法（若有Plane类）
+        else if (shape instanceof Plane) {
+            return ((Plane) shape).getColor();
+        }
+        // Group默认灰色
+        else if (shape instanceof Group) {
+            return new Color(0.5, 0.5, 0.5);
+        }
+        // 未知形状默认白色
+        else {
+            return new Color(1.0, 1.0, 1.0);
+        }
+    }
+
+
+
+    /**
      * 光照计算：环境光 + 漫反射 + 镜面反射 + 阴影
      */
     private Color shade(Hit hit) {
         Vec3 p = hit.position();       // 交点坐标
         Vec3 n = hit.normal().normalize();  // 法向量归一
-        Color objColor = hit.color();  // 物体颜色
+        Color objColor = getShapeColor(hit.shape());
 
         // 环境光
         float ambientStrength = 0.08f;

@@ -43,7 +43,7 @@ public class Sphere implements Shape {
         // 计算交点位置和法向量
         Vec3 point = ray.at(t);
         Vec3 normal = point.subtract(c).normalize();
-        return new Hit(t, point, normal, color);
+        return new Hit(t, point, normal, this);
     }
 
      // 新增：获取球体颜色（供光照计算使用）
