@@ -18,18 +18,24 @@ public class A04 {
     
     public static void main(String[] args){
 
-
-        Vec3 cameraPos = new Vec3(6,16,-55);  // 平移，Y越大越高，Z越负越远
-        Vec3 cameraTarget = new Vec3(4,6, -18); // 看向场景中心
+        Vec3 cameraPos = new Vec3(25,20,-50);  // 平移，Y越大越高，Z越负越远
+        Vec3 cameraTarget = new Vec3(14,5, -16); // 看向场景中心
 
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
+        // 拆分黑白小人作为组
         List<Shape> scene = new ArrayList<>();
-        List<Shape> snowmen = createSnowmanGrid(4, 4); 
-        scene.addAll(snowmen);
 
-        Vec3 planeCenter = new Vec3(0,-200,-22); //球心位置
-        double planeRadius = 200;   //球心半径
+        Group blackSnowmanGroup = new Group();
+        Group whiteSnowmanGroup = new Group();
+
+        createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
+
+        scene.add(blackSnowmanGroup);
+        scene.add(whiteSnowmanGroup);
+
+        Vec3 planeCenter = new Vec3(0,-300,-22); //球心位置
+        double planeRadius = 300;   //球心半径
         Color planeColor = new Color(0.3, 0.3, 0.3);
         double planeYMin = 5;  
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
@@ -59,43 +65,40 @@ public class A04 {
             lichtquellen  
         );
 
-    Image image = new Image(600,600);
-    for (int y = 0; y < 600; y++) {
-        for (int x = 0; x < 600; x++){
-            Color pixelColor = rayTracer.getColor(x, y);
-            image.setPixel(x,y, pixelColor);
+        Image image = new Image(600,600);
+        for (int y = 0; y < 600; y++) {
+            for (int x = 0; x < 600; x++){
+                Color pixelColor = rayTracer.getColor(x, y);
+                image.setPixel(x,y, pixelColor);
+            }
         }
+
+        image.writePng("a04");
+    }    
+
+
+
+    private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color) {
+        Group snowman = new Group();
+        
+        // 下大球（原球体）
+        Sphere baseSphere = new Sphere(baseCenter, baseRadius, color);
+        snowman.addChild(baseSphere);
+        
+        // 上小球（半径为大球的1/2，位置在正上方）
+        double topRadius = 1.4;
+        Vec3 topCenter = new Vec3(
+            baseCenter.x(), 
+            baseCenter.y() + baseRadius + topRadius -0.5, // y轴偏移：大球半径+小球半径
+            baseCenter.z()
+        );
+        Sphere topSphere = new Sphere(topCenter, topRadius, color);
+        snowman.addChild(topSphere);
+        
+        return snowman;
     }
 
-    image.writePng("a04");
-}    
-
-
-
-private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color) {
-    Group snowman = new Group();
-    
-    // 下大球（原球体）
-    Sphere baseSphere = new Sphere(baseCenter, baseRadius, color);
-    snowman.addChild(baseSphere);
-    
-    // 上小球（半径为大球的1/2，位置在正上方）
-    double topRadius = 1.4;
-    Vec3 topCenter = new Vec3(
-        baseCenter.x(), 
-        baseCenter.y() + baseRadius + topRadius -0.5, // y轴偏移：大球半径+小球半径
-        baseCenter.z()
-    );
-    Sphere topSphere = new Sphere(topCenter, topRadius, color);
-    snowman.addChild(topSphere);
-    
-    return snowman;
-}
-
-
-// 4×4雪人矩阵
-    private static List<Shape> createSnowmanGrid(int rows, int cols) {
-        List<Shape> shapes = new ArrayList<>();
+    private static void createSnowmanGrid(int rows, int cols, Group blackGroup, Group whiteGroup) {
         double baseRadius = 1.8; // 保留原大球半径
         double spacing = 4.6;    // 保留原间距
         double yPos = baseRadius; // 下大球的y位置（原球体y坐标）
@@ -113,12 +116,15 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
 
                 // 按列设置颜色（偶数列黑，奇数列白）
                 Color color = (col % 2 == 0) ? new Color(0.02,0.02,0.02) : new Color(1,1,1);
-                // 创建雪人组并添加到列表
+                // 创建雪人组并添加到对应组
                 Group snowman = createSnowman(baseCenter, baseRadius, color);
-                shapes.add(snowman);
+                if (col % 2 == 0) {
+                    blackGroup.addChild(snowman);
+                } else {
+                    whiteGroup.addChild(snowman);
+                }
             }
         }
-        return shapes;
     }
  
 }
