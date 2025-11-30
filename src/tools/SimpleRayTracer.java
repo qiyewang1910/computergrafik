@@ -5,6 +5,7 @@ import tools.Color;
 import tools.Hit;
 import tools.Lichtquelle;
 import tools.Ray;
+import tools.Shape;
 import tools.SimpleCamera;
 import tools.Vec2;
 import tools.Vec3;
@@ -80,16 +81,15 @@ public class SimpleRayTracer {
         Vec3 n = hit.normal().normalize();  // 法向量归一
         Color objColor = hit.color();  // 物体颜色
 
-        // 1. 环境光
-        float ambientStrength = 0.06f;
+        // 环境光
+        float ambientStrength = 0.08f;
         Color ambient = objColor.multiply(ambientStrength);
 
-        // 漫反射
+        // 漫反射 + 镜面反射
         Color diffuseTotal = Color.black();
-        // 镜面反射总和
         Color specularTotal = Color.black();
 
-        // 2. 遍历所有光源
+        // 遍历所有光源
         for (Lichtquelle licht : lichtquelle) {
             // 检测阴影：被遮挡则跳过该光源
             if (isInShadow(p, n, licht)) {
@@ -102,7 +102,7 @@ public class SimpleRayTracer {
 
             // 3. 漫反射（兰伯特定律）
             double dotPktDiffus = Math.max(0, n.dot(l));  // 避免背面受光
-            float diffuseStrength = 0.8f;
+            float diffuseStrength = 0.7f;
             Color diffuse = objColor
                 .multiply(diffuseStrength * (float) dotPktDiffus)
                 .multiplyWithColor(lightIntensity);
@@ -110,26 +110,24 @@ public class SimpleRayTracer {
 
             
             // 4. Spiegelnder Term
-            if(licht.isPunktlicht()){
-                Vec3 richtungLichtquelle = l;  // 光源方向
-                Vec3 normale = n; //表面法向量
-                Vec3 einfallsRichtung = richtungLichtquelle.multiply(-1);  // 入射方向
-                Vec3 r = reflect(einfallsRichtung, normale).normalize(); // 反射方向
-                Vec3 blickRichtung = camera.position().subtract(p).normalize(); // 视线方向
-                Color ankommendeIntensitaet = licht.einfallend(p);   //入射光强
-                Color spiegelnderReflexionskoeffizient = new Color(1,1,1);    //镜面反射系数
-                float spiegelungsStaerke = 1.3f;  // 镜面反射强度
-                double glanzExponent = 20;    //高光指数（越大越集中）
+            if (!licht.isPunktlicht()) {
+            Vec3 einfallsRichtung = l.multiply(-1).normalize();  // 入射方向
+            Vec3 r = reflect(einfallsRichtung, n).normalize(); // 反射方向
+            Vec3 blickRichtung = camera.position().subtract(p).normalize(); // 视线方向
+
+            // Color ankommendeIntensitaet = licht.einfallend(p);   //入射光强
+            Color spiegelnderReflexionskoeffizient = new Color(1.0,1.0,1.0);    //镜面反射系数
+            float spiegelungsStaerke = 0.8f;  // 镜面反射强度
+            double glanzExponent = 30;    //高光指数（越大越集中）
                 
 
-                double dotPkt = Math.max(0, r.dot(blickRichtung));  // 反射方向与视线夹角
-                Color spiegelnderTerm = ankommendeIntensitaet
-                    .multiply(spiegelungsStaerke)
-                    .multiply((float) Math.pow(dotPkt, glanzExponent))
-                    .multiplyWithColor(spiegelnderReflexionskoeffizient);
-                specularTotal = specularTotal.add(spiegelnderTerm);
+            double dotPkt = Math.max(0, r.dot(blickRichtung));  // 反射方向与视线夹角
+            Color spiegelnderTerm = lightIntensity
+                .multiply(spiegelungsStaerke)
+                .multiply((float) Math.pow(dotPkt, glanzExponent))
+                .multiplyWithColor(spiegelnderReflexionskoeffizient);
+            specularTotal = specularTotal.add(spiegelnderTerm);    
             }
-            
         }
 
         // 5. 最终颜色合成

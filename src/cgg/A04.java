@@ -17,17 +17,20 @@ import tools.Vec3;
 public class A04 {
     
     public static void main(String[] args){
-        Vec3 cameraPos = new Vec3(0,10,7);  //Y越大越高，Z越负越远
-        SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos);
+
+
+        Vec3 cameraPos = new Vec3(6,16,-55);  // 平移，Y越大越高，Z越负越远
+        Vec3 cameraTarget = new Vec3(4,6, -18); // 看向场景中心
+
+        SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
         List<Shape> scene = new ArrayList<>();
-
         List<Shape> snowmen = createSnowmanGrid(4, 4); 
         scene.addAll(snowmen);
 
         Vec3 planeCenter = new Vec3(0,-200,-22); //球心位置
         double planeRadius = 200;   //球心半径
-        Color planeColor = new Color(0.5, 0.5, 0.5);
+        Color planeColor = new Color(0.3, 0.3, 0.3);
         double planeYMin = 5;  
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
         scene.add(groundPlane); // 地面加入场景
@@ -39,13 +42,13 @@ public class A04 {
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表
         
         // 5.1 添加方向光源（太阳光）
-        Vec3 lichtRichtung = new Vec3(-5, -11, -2).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(0.7f, 0.7f, 0.7f);   
+        Vec3 lichtRichtung = new Vec3(-3, -8, -2).normalize();  // 光源方向
+        Color lichtIntensitaet = new Color(1f, 1f, 1f);   
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（灯泡，在场景上方）
-        Vec3 punktLichtPos = new Vec3(0, 10, -20);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(5, 10, 10); 
+        Vec3 punktLichtPos = new Vec3(5, 15, -25);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(2, 2, 2); 
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
         // 6. 光线追踪（传入光源列表）
@@ -109,7 +112,7 @@ private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color col
                 Vec3 baseCenter = new Vec3(x, yPos, z);
 
                 // 按列设置颜色（偶数列黑，奇数列白）
-                Color color = (col % 2 == 0) ? new Color(0,0,0) : new Color(1,1,1);
+                Color color = (col % 2 == 0) ? new Color(0.02,0.02,0.02) : new Color(1,1,1);
                 // 创建雪人组并添加到列表
                 Group snowman = createSnowman(baseCenter, baseRadius, color);
                 shapes.add(snowman);
