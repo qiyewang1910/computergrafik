@@ -8,7 +8,6 @@ import tools.Group;
 import tools.Lichtquelle;
 import tools.Mat44;
 import tools.Quader;
-import tools.ReinhardGlobalTmo;
 import tools.Shape;
 import tools.SimpleCamera;
 import tools.SimpleRayTracer;
@@ -88,13 +87,13 @@ public class A04 {
              
         
         // 4. 背景色
-        Color backgroundColor = new Color(0, 0.001, 0);
+        Color backgroundColor = new Color(0.05, 0.05, 0.2);
 
         // 5. 添加光源
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表
         
         // 5.1 添加方向光源（太阳光）
-        Vec3 lichtRichtung = new Vec3(-3, -8, -2).normalize();  // 光源方向
+        Vec3 lichtRichtung = new Vec3(-5, -5, -2).normalize();  // 光源方向
         Color lichtIntensitaet = new Color(1f, 1f, 1f);   
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
@@ -124,7 +123,7 @@ public class A04 {
             }
         }
 
-        new ReinhardGlobalTmo(0.005).toneMap(image);
+        //  new ReinhardGlobalTmo(0.005).toneMap(image);
         image.writePng("a04");
         }
        
