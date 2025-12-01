@@ -16,17 +16,17 @@ public class Ebene implements Shape {
     private Mat44 transform; // 变换矩阵
     private Mat44 invTransform; // 逆变换矩阵
 
-    // 构造方法：无限平面
+    // 无限平面
     public Ebene(Color color) {
         this(Ausdehnung.UNBEGRENZT, 0, color);
     }
 
-    // 构造方法：圆形平面
+    // 圆形平面
     public Ebene(double radius, Color color) {
         this(Ausdehnung.KREISRUND, radius, color);
     }
 
-    // 构造方法：正方形平面
+    // 正方形平面
     public Ebene(double seite, boolean istQuadrat, Color color) {
         this(Ausdehnung.QUADRATISCH, seite, color);
     }
@@ -53,21 +53,21 @@ public class Ebene implements Shape {
     // Y=0平面求交
     @Override
     public Hit intersect(Ray ray) {
-        ray.transform(invTransform);
+        Ray transformedRay = ray.transform(invTransform);
 
-        Vec3 rayDir = ray.direction();
-        Vec3 rayOrig = ray.origin();
+        Vec3 rayDir = transformedRay.direction();
+        Vec3 rayOrig = transformedRay.origin();
 
         // Y=0平面求交
-        if (Math.abs(rayDir.y()) < 1e-9) return null;
+        if (Math.abs(rayDir.y()) < 1e-9) { return null; }
         
         double t = -rayOrig.y() / rayDir.y();
         
-        if (t < ray.tmin() || t > ray.tmax()) return null;
+        if (t < transformedRay.tmin() || t > transformedRay.tmax()) { return null; }
 
-        Vec3 hitPos = ray.at(t);
+        Vec3 hitPos = transformedRay.at(t);
 
-        // 范围判断（仅X/Z轴）
+        // 6.检查交点是否在边界内
         boolean inBounds;
         switch (typ) {
             case UNBEGRENZT:
@@ -86,17 +86,24 @@ public class Ebene implements Shape {
                 inBounds = false;
         }
         
-        if (!inBounds) return null;
+        if (!inBounds) { return null; }
 
-        // 法向量（局部坐标系中向上）
+        // 5. 计算局部坐标的法向量（局部坐标系中向上）
         Vec3 localNormal = new Vec3(0, 1, 0);
-        if (rayDir.y() > 0) {
+        
+         // 射线起点的Y坐标 < 0 → 观察者在平面下方，法向量朝下（-Y）
+        if (rayOrig.y() < 0) {
             localNormal = localNormal.multiply(-1);
         }
 
-        // 创建局部坐标系的Hit，然后变换到世界坐标系
-        Hit localHit = new Hit(t, hitPos, localNormal, this);
-        return localHit.transform(transform);
+        // 将交点和法向量转换回世界坐标
+        Vec3 worldHitPos = transform.multiplyPoint(hitPos); // 点变换
+        Vec3 worldNormal = transform.multiplyDirection(localNormal).normalize(); // 法向量变换（仅旋转缩放）
+
+
+        // 创建Hit对象（t值使用原始射线的参数，无需转换）
+        return new Hit(t, worldHitPos, worldNormal, this);
+       
     }
 
     // 获取平面颜色

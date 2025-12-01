@@ -31,7 +31,7 @@ public class Quader extends Group {
                             double rx, double ry, double rz) {
         Group face = new Group();
 
-        Mat44 trans = Mat44.translate(tx, ty, tz)
+        Mat44 trans = Mat44.rotateX(rx)
                            .multiply(Mat44.rotateX(rx))
                            .multiply(Mat44.rotateY(ry));
         face.setTransform(trans);

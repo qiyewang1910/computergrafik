@@ -109,8 +109,7 @@ public final class Mat44 {
      */
     public Mat44 multiply(Mat44 m) {
         Mat44 n = new Mat44();   // 新建矩阵存储结果
-        // 以下是硬编码的4x4矩阵乘法（逐列逐行计算）
-        // 省略具体计算逻辑，核心规则：
+        // 硬编码的4x4矩阵乘法（逐列逐行计算）
         // 结果矩阵的 (列c, 行r) = 本矩阵的列c · 传入矩阵的行r（点积）
         {
             {
@@ -347,19 +346,40 @@ public final class Mat44 {
         return mat;
     }
 
-    // 兼容int参数的translate（适配A04的int参数）
+    // 兼容int参数的translate
     public static Mat44 translate(int tx, int ty, int tz) {
         return translate((double) tx, (double) ty, (double) tz);
     }
 
 
-    private double[] values;
 
-
-    public static Mat44 rotateZ(double rz) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'rotateZ'");
+    /**
+     * 用矩阵变换三维点（考虑平移分量）
+     * 点的齐次坐标为 (x, y, z, 1)
+     */
+    public Vec3 multiplyPoint(Vec3 point) {
+        // 列主序矩阵 × 点的计算（矩阵列 × 点的行向量）
+        double x = point.x() * get(0, 0) + point.y() * get(0, 1) + point.z() * get(0, 2) + get(0, 3);
+        double y = point.x() * get(1, 0) + point.y() * get(1, 1) + point.z() * get(1, 2) + get(1, 3);
+        double z = point.x() * get(2, 0) + point.y() * get(2, 1) + point.z() * get(2, 2) + get(2, 3);
+        return new Vec3(x, y, z);
     }
+
+    /**
+     * 用矩阵变换方向向量（不考虑平移分量）
+     * 方向向量的齐次坐标为 (x, y, z, 0)
+     */
+    public Vec3 multiplyDirection(Vec3 dir) {
+        // 列主序矩阵 × 方向向量（忽略平移分量）
+        double x = dir.x() * get(0, 0) + dir.y() * get(0, 1) + dir.z() * get(0, 2);
+        double y = dir.x() * get(1, 0) + dir.y() * get(1, 1) + dir.z() * get(1, 2);
+        double z = dir.x() * get(2, 0) + dir.y() * get(2, 1) + dir.z() * get(2, 2);
+        return new Vec3(x, y, z);
+    }
+    
+
+
+    private double[] values;
 }
 
 

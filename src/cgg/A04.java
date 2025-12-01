@@ -52,10 +52,9 @@ public class A04 {
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
-            // 创建立方体
-            Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
-            // 调整立方体在矩阵中的位置（相对于矩阵的局部坐标）
-            Mat44 boxTrans = Mat44.translate(-1, 0.4, -61); // 这里的坐标是相对于当前矩阵的偏移
+            // 创建正方形地面
+            Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); 
+            Mat44 boxTrans = Mat44.translate(-1, 0.4, -50); // 这里的坐标是相对于当前矩阵的偏移
             box.setTransform(boxTrans);
             snowmanMatrixGroup.addChild(box); // 加入当前矩阵组
 
@@ -68,16 +67,12 @@ public class A04 {
         }
 
          // ===== 2. 创建红色正方体（左下角）=====
-         System.out.println("创建红色正方体...");
-        
-         // 创建边长为6的红色正方体
-         Quader redBox = new Quader(6, new Color(0.9, 0.1, 0.1));
+         Quader redBox = new Quader(10, new Color(0.9, 0.1, 0.1));
          
-         Mat44 redBoxTrans = Mat44.translate(-18, 10, -12);
+         Mat44 redBoxTrans = Mat44.translate(-10, 10, -40);
          redBox.setTransform(redBoxTrans);
          scene.add(redBox);
-         
-         System.out.println("红色正方体位置: (-18, 3, -12)");
+      
 
 
 
