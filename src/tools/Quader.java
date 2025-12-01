@@ -27,7 +27,8 @@ public class Quader extends Group {
     }
 
     // 辅助方法：添加单个面（平移+旋转）
-    private void addFace(Ebene ebene, double tx, double ty, double tz, double rx, double ry, double rz) {
+    private void addFace(Ebene ebene, double tx, double ty, double tz, 
+                            double rx, double ry, double rz) {
         Group face = new Group();
 
         Mat44 trans = Mat44.translate(tx, ty, tz)
@@ -38,7 +39,7 @@ public class Quader extends Group {
         this.addChild(face);
     }
 
-    // 默认6x6x6正方体
+    // 默认6x6x6正方体s
     public Quader() {
         this(6, new Color(0.1, 0.5, 0.9));
     }

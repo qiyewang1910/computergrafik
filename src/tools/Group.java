@@ -3,7 +3,7 @@ package tools;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Group implements Shape { // 必须实现Shape接口
+public class Group implements Shape { 
     private List<Shape> children = new ArrayList<>();
     private Mat44 transform = new Mat44(); // 组合变换矩阵（默认单位矩阵）
     private Mat44 invTransform; // 逆矩阵（用于射线变换）
@@ -14,12 +14,12 @@ public class Group implements Shape { // 必须实现Shape接口
         this.invTransform = transform.invert(); // 依赖之前补充的invert()方法
     }
 
-    // 新增：获取变换矩阵
+    // 获取变换矩阵
     public Mat44 getTransform() {
         return transform;
     }
 
-    // 新增：获取逆变换矩阵
+    // 获取逆变换矩阵
     public Mat44 getInvTransform() {
         return invTransform;
     }
@@ -59,4 +59,15 @@ public class Group implements Shape { // 必须实现Shape接口
         }
         return closestHit;
     }
+
+    @Override
+public Color getColor() {
+    // 遍历所有子形状，计算组合颜色
+    if (children.isEmpty()) {
+        return null; // 或者返回默认颜色
+    }
+    // 示例：返回第一个子形状的颜色
+    return children.get(0).getColor();
+}
+
 }

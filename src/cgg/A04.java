@@ -7,7 +7,6 @@ import tools.Color;
 import tools.Group;
 import tools.Lichtquelle;
 import tools.Mat44;
-import tools.Plane;
 import tools.Quader;
 import tools.ReinhardGlobalTmo;
 import tools.Shape;
@@ -33,7 +32,6 @@ public class A04 {
         double matrixSpacing = 30; // 矩阵之间的前后间距
 
         for (int i = 0; i < matrixCount; i++) {
-            // 每个矩阵封装为独立Group
             Group snowmanMatrixGroup = new Group();
 
             Group blackSnowmanGroup = new Group();
@@ -42,6 +40,7 @@ public class A04 {
                                     .multiply(Mat44.rotateY(0))
                                     .multiply(Mat44.translate(1, 0, -1));
             blackSnowmanGroup.setTransform(blackTrans);
+
             // 2. 白色雪人组：
             Group whiteSnowmanGroup = new Group();
             Mat44 whiteTrans = Mat44.scale(1, 1, 1)
@@ -53,7 +52,7 @@ public class A04 {
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
-            // 创建立方体（作为矩阵的一部分）
+            // 创建立方体
             Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); // 6x6x6正方体，红色
             // 调整立方体在矩阵中的位置（相对于矩阵的局部坐标）
             Mat44 boxTrans = Mat44.translate(-1, 0.4, -61); // 这里的坐标是相对于当前矩阵的偏移
@@ -68,6 +67,21 @@ public class A04 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
 
+         // ===== 2. 创建红色正方体（左下角）=====
+         System.out.println("创建红色正方体...");
+        
+         // 创建边长为6的红色正方体
+         Quader redBox = new Quader(6, new Color(0.9, 0.1, 0.1));
+         
+         Mat44 redBoxTrans = Mat44.translate(-18, 10, -12);
+         redBox.setTransform(redBoxTrans);
+         scene.add(redBox);
+         
+         System.out.println("红色正方体位置: (-18, 3, -12)");
+
+
+
+        /** 
         // 创建地面平面
         Vec3 planeCenter = new Vec3(0,-300,-22); //球心位置
         double planeRadius = 300;   //球心半径
@@ -75,11 +89,11 @@ public class A04 {
         double planeYMin = 6;  
         Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
         scene.add(groundPlane); // 地面加入场景
-    
+        */
              
         
         // 4. 背景色
-        Color backgroundColor = new Color(0, 0, 0);
+        Color backgroundColor = new Color(0, 0.001, 0);
 
         // 5. 添加光源
         List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表
