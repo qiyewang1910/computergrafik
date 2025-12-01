@@ -20,7 +20,7 @@ public class A04 {
     
     public static void main(String[] args){
 
-        Vec3 cameraPos = new Vec3(23,25,-68);  // 平移，Y越大越高，Z越负越远
+        Vec3 cameraPos = new Vec3(27,25,-72);  // 平移，Y越大越高，Z越负越远
         Vec3 cameraTarget = new Vec3(15,10, -22); // 看向场景中心
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
@@ -28,7 +28,7 @@ public class A04 {
         List<Shape> scene = new ArrayList<>();
 
         // 循环创建多个4×4雪人矩阵
-        int matrixCount = 6; // 要创建的矩阵数量（比如4个）
+        int matrixCount = 20; // 要创建的矩阵数量
         double matrixSpacing = 30; // 矩阵之间的前后间距
 
         for (int i = 0; i < matrixCount; i++) {
@@ -54,7 +54,7 @@ public class A04 {
 
             // 创建正方形地面
             Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); 
-            Mat44 boxTrans = Mat44.translate(-1, 0.4, -50); // 这里的坐标是相对于当前矩阵的偏移
+            Mat44 boxTrans = Mat44.translate(-1, 0.4, -19); // 这里的坐标是相对于当前矩阵的偏移
             box.setTransform(boxTrans);
             snowmanMatrixGroup.addChild(box); // 加入当前矩阵组
 
