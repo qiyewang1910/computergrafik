@@ -4,6 +4,7 @@ import cgg.Image;
 import java.util.ArrayList;
 import java.util.List;
 import tools.Color;
+import tools.Ebene;
 import tools.Group;
 import tools.Lichtquelle;
 import tools.Mat44;
@@ -32,6 +33,7 @@ public class A04 {
     
         List<Shape> scene = new ArrayList<>();
 
+
         // 循环创建多个4×4雪人矩阵
         int matrixCount = 20; // 矩阵数量
         double matrixSpacing = 30; // 矩阵之间的间距
@@ -58,11 +60,13 @@ public class A04 {
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
-            // 正方形地面
-            Quader box = new Quader(10, new Color(1.0, 1.0, 1.0,1)); // 半透明色
-            Mat44 boxTrans = Mat44.translate(-1, 0.4, -19); // 这里的坐标是相对于当前矩阵的偏移
-            box.setTransform(boxTrans);
-            snowmanMatrixGroup.addChild(box); 
+            /**
+            // 正方体
+            Quader base = new Quader(40, 1, 22, new Color(0.9, 0.1, 0.1, 0.5)); 
+            Mat44 baseTrans = Mat44.translate(0, -0.5, -21); 
+            base.setTransform(baseTrans);
+            snowmanMatrixGroup.addChild(base);
+             */
 
             // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
             double zOffset = -21 + i * matrixSpacing; // 基于原Z轴偏移，叠加矩阵间距
@@ -72,6 +76,17 @@ public class A04 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
       
+        // ===== 添加无限地面=====
+        // 1. 创建无限平面
+        Ebene groundPlane = new Ebene(new Color(0.3, 0.8, 0.3, 0.4)); 
+        // 2. 设置平面位置和朝向：沿y轴=0平面（雪人底部y≈1.8，所以y=0刚好在雪人下方）
+        // 变换矩阵：平移到y=0，确保平面水平（朝向y轴正方向）
+        Mat44 planeTrans = Mat44.translate(0, -80.0, 0);// 平面中心在原点
+        groundPlane.setTransform(planeTrans);
+        // 3. 将平面添加到场景（全局物体，最先添加确保在最底层）
+        scene.add(groundPlane);
+
+
         
         // 4. 背景色
         Color backgroundColor = new Color(0.04, 0.04, 0.1, 1); // 深蓝色背景
@@ -108,7 +123,7 @@ public class A04 {
             for (int x = 0; x < 800; x++){
                 Color pixelColor = rayTracer.getColor(x, y);
 
-                // 核心修改：如果是背景色，替换为星空颜色
+                // 如果是背景色，替换为星空颜色
                 if (isBackgroundColor(pixelColor, backgroundColor)) {
                     Ray ray = camera.generateRay(new Vec2(x, y));
                     // 获取当前像素对应的光线方向
@@ -154,8 +169,31 @@ public class A04 {
         );
         Sphere topSphere = new Sphere(topCenter, topRadius, color);
         snowman.addChild(topSphere);
+
         
+
+        // 3. 添加长方体基座（在雪人正下方）
+        // 基座尺寸
+        double baseWidth = 4;
+        double baseHeight = 4;
+        double baseDepth = 0.5;
+        // 基座颜色：灰色（可自定义）
+        Color baseColor = new Color(0.5, 0.5, 0.5, 1);
+        Quader base = new Quader(baseWidth, baseHeight, baseDepth, baseColor);
+        
+        // 基座位置：雪人底部球体的正下方（y坐标为球体底部 - 基座高度）
+        double baseY = (baseCenter.y() - baseRadius) - baseHeight/2.0;
+        Mat44 baseTrans = Mat44.translate(
+            baseCenter.x(),  // 与雪人x坐标一致
+            baseY,           // 位于雪人底部下方
+            baseCenter.z()   // 与雪人z坐标一致
+        );
+
+        base.setTransform(baseTrans);
+        snowman.addChild(base); // 将基座添加到雪人组
+
         return snowman;
+        
     }
 
     private static void createSnowmanGrid(int rows, int cols, Group blackGroup, Group whiteGroup) {

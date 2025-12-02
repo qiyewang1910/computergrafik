@@ -85,7 +85,7 @@ public class Quader extends Group {
     }
 
     // 兼容原有长方体构造方法
-    public Quader() {
-        this(6,6,6, new Color(0.1, 0.5, 0.9,1.0)); 
+    public Quader(double seite, Color color, double alpha) {
+        this(seite, seite, seite, color); 
     }
 }
