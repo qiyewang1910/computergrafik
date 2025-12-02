@@ -18,6 +18,9 @@ import tools.StarrySky;
 import tools.Vec2;
 import tools.Vec3;
 
+import static tools.Functions.multiplyPoint;
+
+
 
 
 public class A04 {
@@ -27,7 +30,7 @@ public class A04 {
         StarrySky starrySky = new StarrySky();
 
         Vec3 cameraPos = new Vec3(27,25,-72);  // 平移，相机位置
-        Vec3 cameraTarget = new Vec3(15,10, -22); // 相机看向的目标
+        Vec3 cameraTarget = new Vec3(15,8, -22); // 相机看向的目标
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 800, 800, cameraPos, cameraTarget);
 
     
@@ -60,13 +63,7 @@ public class A04 {
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
-            /**
-            // 正方体
-            Quader base = new Quader(40, 1, 22, new Color(0.9, 0.1, 0.1, 0.5)); 
-            Mat44 baseTrans = Mat44.translate(0, -0.5, -21); 
-            base.setTransform(baseTrans);
-            snowmanMatrixGroup.addChild(base);
-             */
+          
 
             // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
             double zOffset = -21 + i * matrixSpacing; // 基于原Z轴偏移，叠加矩阵间距
@@ -76,15 +73,15 @@ public class A04 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
       
-        // ===== 添加无限地面=====
-        // 1. 创建无限平面
-        Ebene groundPlane = new Ebene(new Color(0.3, 0.8, 0.3, 0.4)); 
-        // 2. 设置平面位置和朝向：沿y轴=0平面（雪人底部y≈1.8，所以y=0刚好在雪人下方）
-        // 变换矩阵：平移到y=0，确保平面水平（朝向y轴正方向）
-        Mat44 planeTrans = Mat44.translate(0, -80.0, 0);// 平面中心在原点
-        groundPlane.setTransform(planeTrans);
+        // 1. 添加无限地面
+        Ebene slopePlane = new Ebene(new Color(1, 1, 1, 1)); 
+        // 2. 设置平面位置和朝向
+        Mat44 slopeTrans = Mat44.rotateX(Math. toRadians(20))
+                                .multiply(Mat44.translate(0,-80, 0));
+        slopePlane.setTransform(slopeTrans);
+        
         // 3. 将平面添加到场景（全局物体，最先添加确保在最底层）
-        scene.add(groundPlane);
+        scene.add(slopePlane);
 
 
         
@@ -95,12 +92,12 @@ public class A04 {
         List<Lichtquelle> lichtquellen = new ArrayList<>();  
         
         // 5.1 添加方向光源（太阳光）
-        Vec3 lichtRichtung = new Vec3(-5, -5, -2).normalize();  // 光源方向
+        Vec3 lichtRichtung = new Vec3(-5, -20, -2).normalize();  // 光源方向
         Color lichtIntensitaet = new Color(0.7f, 0.7f, 0.7f, 1f); // 光源强度 
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（上方）
-        Vec3 punktLichtPos = new Vec3(5, 15, -25);  // 点光源位置（球体上方）
+        Vec3 punktLichtPos = new Vec3(-5, 15, -25);  // 点光源位置（球体上方）
         Color punktLichtIntens = new Color(0.4, 0.4, 0.4, 1); // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 

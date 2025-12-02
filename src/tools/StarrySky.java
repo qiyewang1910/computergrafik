@@ -6,7 +6,7 @@ import tools.Vec3;
 
 public class StarrySky{
     private Random random = Random.generator;
-    private int starCount = 500;
+    private int starCount = 600;
     private Vec3[] starDirections; // 存储星星的方向和亮度
     private float[] starBrightness; // 星星亮度
 
