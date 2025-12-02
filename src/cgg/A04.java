@@ -8,33 +8,39 @@ import tools.Group;
 import tools.Lichtquelle;
 import tools.Mat44;
 import tools.Quader;
+import tools.Ray;
 import tools.Shape;
 import tools.SimpleCamera;
 import tools.SimpleRayTracer;
 import tools.Sphere;
+import tools.StarrySky;
+import tools.Vec2;
 import tools.Vec3;
+
 
 
 public class A04 {
     
     public static void main(String[] args){
 
-        Vec3 cameraPos = new Vec3(27,25,-72);  // 平移，Y越大越高，Z越负越远
-        Vec3 cameraTarget = new Vec3(15,10, -22); // 看向场景中心
+        StarrySky starrySky = new StarrySky();
+
+        Vec3 cameraPos = new Vec3(27,25,-72);  // 平移，相机位置
+        Vec3 cameraTarget = new Vec3(15,10, -22); // 相机看向的目标
         SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
 
     
         List<Shape> scene = new ArrayList<>();
 
         // 循环创建多个4×4雪人矩阵
-        int matrixCount = 20; // 要创建的矩阵数量
-        double matrixSpacing = 30; // 矩阵之间的前后间距
+        int matrixCount = 20; // 矩阵数量
+        double matrixSpacing = 30; // 矩阵之间的间距
 
         for (int i = 0; i < matrixCount; i++) {
             Group snowmanMatrixGroup = new Group();
 
-            Group blackSnowmanGroup = new Group();
             // 1. 黑色雪人组：
+            Group blackSnowmanGroup = new Group();
             Mat44 blackTrans = Mat44.scale(1, 1, 1)
                                     .multiply(Mat44.rotateY(0))
                                     .multiply(Mat44.translate(1, 0, -1));
@@ -47,15 +53,16 @@ public class A04 {
                                     .multiply(Mat44.translate(1.1, 0, 3.2));
             whiteSnowmanGroup.setTransform(whiteTrans);
 
+            // 创建雪人网格
             createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
-            // 创建正方形地面
+            // 正方形地面
             Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); 
             Mat44 boxTrans = Mat44.translate(-1, 0.4, -19); // 这里的坐标是相对于当前矩阵的偏移
             box.setTransform(boxTrans);
-            snowmanMatrixGroup.addChild(box); // 加入当前矩阵组
+            snowmanMatrixGroup.addChild(box); 
 
             // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
             double zOffset = -21 + i * matrixSpacing; // 基于原Z轴偏移，叠加矩阵间距
@@ -65,39 +72,26 @@ public class A04 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
 
-         // ===== 2. 创建红色正方体（左下角）=====
+
+         // 红色正方体（左下角）=====
          Quader redBox = new Quader(10, new Color(0.9, 0.1, 0.1));
-         
          Mat44 redBoxTrans = Mat44.translate(-10, 10, -40);
          redBox.setTransform(redBoxTrans);
          scene.add(redBox);
       
-
-
-
-        /** 
-        // 创建地面平面
-        Vec3 planeCenter = new Vec3(0,-300,-22); //球心位置
-        double planeRadius = 300;   //球心半径
-        Color planeColor = new Color(0.3, 0.3, 0.3);            
-        double planeYMin = 6;  
-        Plane groundPlane = new Plane(planeCenter, planeRadius, planeColor, planeYMin);
-        scene.add(groundPlane); // 地面加入场景
-        */
-             
         
         // 4. 背景色
-        Color backgroundColor = new Color(0.05, 0.05, 0.2);
+        Color backgroundColor = new Color(0.04, 0.04, 0.1);
 
         // 5. 添加光源
-        List<Lichtquelle> lichtquellen = new ArrayList<>();  // 创建光源列表
+        List<Lichtquelle> lichtquellen = new ArrayList<>();  
         
         // 5.1 添加方向光源（太阳光）
         Vec3 lichtRichtung = new Vec3(-5, -5, -2).normalize();  // 光源方向
         Color lichtIntensitaet = new Color(1f, 1f, 1f);   
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
-        // 5.2 添加点光源（灯泡，在场景上方）
+        // 5.2 添加点光源（上方）
         Vec3 punktLichtPos = new Vec3(5, 15, -25);  // 点光源位置（球体上方）
         Color punktLichtIntens = new Color(2, 2, 2); 
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
@@ -110,6 +104,7 @@ public class A04 {
             lichtquellen  
         );
 
+        //  6. 渲染图片
         Image image = new Image(600,600);
         System.out.println("start rendering...");
 
@@ -119,15 +114,37 @@ public class A04 {
             }
             for (int x = 0; x < 600; x++){
                 Color pixelColor = rayTracer.getColor(x, y);
+
+                // 核心修改：如果是背景色，替换为星空颜色
+                if (isBackgroundColor(pixelColor, backgroundColor)) {
+                    Ray ray = camera.generateRay(new Vec2(x, y));
+                    // 获取当前像素对应的光线方向
+                    Vec3 rayDir = ray.direction();
+                    // 替换为星空颜色
+                    pixelColor = starrySky.getSkyColor(rayDir);
+                }
+
                 image.setPixel(x,y, pixelColor);
             }
         }
 
-        //  new ReinhardGlobalTmo(0.005).toneMap(image);
         image.writePng("a04");
-        }
+    }
        
 
+    /**
+     * 辅助方法：判断是否为背景色（避免浮点数精度问题）
+     */
+    private static boolean isBackgroundColor(Color color, Color bgColor) {
+        double eps = 0.001; // 精度阈值
+        return Math.abs(color.r() - bgColor.r()) < eps
+                && Math.abs(color.g() - bgColor.g()) < eps
+                && Math.abs(color.b() - bgColor.b()) < eps;
+    }
+
+    /**
+     * 创建一个雪人组（包含上下两个球体）
+     */
     private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color) {
         Group snowman = new Group();
         
@@ -176,5 +193,4 @@ public class A04 {
             }
         }
     }
- 
 }

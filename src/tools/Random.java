@@ -1,6 +1,7 @@
 
 package tools;
 
+
 /**
  * A faster replacement for java.util.Random.
  *
@@ -14,7 +15,7 @@ public class Random extends java.util.Random {
 
   private long x;
 
-  private static Random generator;
+  static Random generator;
 
   static { generator = new Random(); }
 
