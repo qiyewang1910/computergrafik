@@ -12,19 +12,19 @@ public class SphereTest {
         System.out.println();
 
         //r1&s1
-        Sphere s1 = new Sphere(new Vec3(0,0,-2), 1, new Color(0,0,0));
+        Sphere s1 = new Sphere(new Vec3(0,0,-2), 1, new Color(0,0,0,  1));
         System.out.println("s1 und r1 schneiden ");
         System.out.println(s1.intersect(r1));
         System.out.println();
 
         //r1&s2
-        Sphere s2 = new Sphere(new Vec3(0,-1,-2), 1, new Color(0,0,0));
+        Sphere s2 = new Sphere(new Vec3(0,-1,-2), 1, new Color(0,0,0,  1));
         System.out.println("s2 und r1 schneiden ");
         System.out.println(s2.intersect(r1));
         System.out.println();
 
         //r1&s3
-        Sphere s3 = new Sphere(new Vec3(0,0,0),1, new Color(0,0,0));
+        Sphere s3 = new Sphere(new Vec3(0,0,0),1, new Color(0,0,0,  1));
         System.out.println("s3 und r1 schneiden ");
         System.out.println(s3.intersect(r1));
         System.out.println();

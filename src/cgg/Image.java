@@ -20,6 +20,7 @@ public class Image implements tools.Image {
 
     // TODO Stores the RGB color components for one particular pixel addressed
     // by it's coordinates in the image.
+    @Override
     public void setPixel(int x, int y, Color color) {
         //检查坐标合法性
         if ( x<0 || x>=width || y<0 || y>=height) {
@@ -35,12 +36,13 @@ public class Image implements tools.Image {
 
     // TODO Retrieves the RGB color components for one particular pixel addressed
     // by it's coordinates in the image.
+    @Override
     public Color getPixel(int x, int y) {
         if (x<0 || x>=width || y<0 || y>=height){
             return Color.black;
         }
         int index = (y * width + x) * 3;
-        return new Color(pixels[index], pixels[index + 1], pixels[index +2]);
+        return new Color(pixels[index], pixels[index + 1], pixels[index +2], index +3);
     }
     // --->8---
 
@@ -60,6 +62,7 @@ public class Image implements tools.Image {
         // write the image data to disk in OpenEXR format.
     }
 
+    @Override
     public int width() {
         // TODO This is just a dummy value to make the compiler happy. This
         // needs to be adjusted such that the actual width of the Image is
@@ -67,6 +70,7 @@ public class Image implements tools.Image {
         return width;
     }
 
+    @Override
     public int height() {
         // TODO This is just a dummy value to make the compiler happy. This
         // needs to be adjusted such that the actual height of the Image is

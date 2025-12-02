@@ -36,7 +36,7 @@ public class StarrySky{
      */
     public Color getSkyColor(Vec3 rayDirection){
         // 深蓝色夜空底色
-        Color nightSky = new Color(0.01, 0.01, 0.025);
+        Color nightSky = new Color(0.01, 0.01, 0.025, 1.0);
 
         // 检测光线方向是否指向星星
         for (int i = 0; i < starCount; i++) {
@@ -46,7 +46,7 @@ public class StarrySky{
             if (dotProduct > 0.999997) {
                 float b = starBrightness[i];
                 // 星星颜色：白色/浅黄色
-                return new Color(b, b, b + 0.1f);
+                return new Color(b, b, b + 0.1f, 1.0f);
             }
         }
 

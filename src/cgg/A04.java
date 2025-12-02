@@ -59,7 +59,7 @@ public class A04 {
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
             // 正方形地面
-            Quader box = new Quader(24, new Color(0.9, 0.1, 0.1)); 
+            Quader box = new Quader(24, new Color(0.9, 0.1, 0.1,0.3)); // 半透明红色
             Mat44 boxTrans = Mat44.translate(-1, 0.4, -19); // 这里的坐标是相对于当前矩阵的偏移
             box.setTransform(boxTrans);
             snowmanMatrixGroup.addChild(box); 
@@ -74,19 +74,19 @@ public class A04 {
       
         
         // 4. 背景色
-        Color backgroundColor = new Color(0.04, 0.04, 0.1);
+        Color backgroundColor = new Color(0.04, 0.04, 0.1, 1); // 深蓝色背景
 
         // 5. 添加光源
         List<Lichtquelle> lichtquellen = new ArrayList<>();  
         
         // 5.1 添加方向光源（太阳光）
         Vec3 lichtRichtung = new Vec3(-5, -5, -2).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(1f, 1f, 1f);   
+        Color lichtIntensitaet = new Color(1f, 1f, 1f, 1f); // 光源强度 
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（上方）
         Vec3 punktLichtPos = new Vec3(5, 15, -25);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(2, 2, 2); 
+        Color punktLichtIntens = new Color(2, 2, 2, 1); // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
         // 6. 光线追踪（传入光源列表）
@@ -175,7 +175,7 @@ public class A04 {
                 Vec3 baseCenter = new Vec3(x, yPos, z);
 
                 // 按列设置颜色（偶数列黑，奇数列白）
-                Color color = (col % 2 == 0) ? new Color(0.02,0.02,0.02) : new Color(1,1,1);
+                Color color = (col % 2 == 0) ? new Color(0.02, 0.02, 0.02, z) : new Color(1,1,1,1);
                 // 创建雪人组并添加到对应组
                 Group snowman = createSnowman(baseCenter, baseRadius, color);
                 if (col % 2 == 0) {

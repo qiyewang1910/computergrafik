@@ -36,19 +36,47 @@ public class SimpleRayTracer {
     public Color getColor(int x, int y) {
         // 1. 生成从相机到像素的射线
         Ray ray = camera.generateRay(new Vec2(x, y));
-        
-        // 2. 查找射线与所有物体的最近交点
-        Hit closestHit = findClosestHit(ray);
-
-        // 3. 计算交点颜色或返回背景色
-        if (closestHit != null) {
-            Color shadedColor = shade(closestHit);
-            return shadedColor.clamp();
-        } else {
-            return backgroundColor;
-        }
+        return trace(ray, 5);
     }
     
+    public Color trace(Ray ray, int depth) {
+        if (depth <= 0) {
+            return backgroundColor; // 达到递归深度，返回黑色
+        }
+
+        // 查找最近交点
+        Hit closestHit = findClosestHit(ray);
+
+        if (closestHit == null) {
+            return backgroundColor; // 无交点返回背景色
+        }
+
+        // 计算当前表面的光照颜色
+        Color localColor = shade(closestHit);
+        
+        // 获取物体原始颜色的透明度
+        Color rawColor = getShapeColor(closestHit.shape());
+        double alpha = rawColor.a(); // 使用你新加的 alpha()
+
+        // 如果物体是半透明 (alpha < 1.0)，则继续追踪
+        if (alpha < 1.0 - 1e-4) { // 稍微容错
+            // 射线的起点稍微往前移一点点，防止打到自己
+            Vec3 offsetOrigin = closestHit.position().add(ray.direction().multiply(0.001));
+            Ray nextRay = new Ray(offsetOrigin, ray.direction(), 0, Double.POSITIVE_INFINITY);
+            
+            // 递归获取背景颜色
+            Color colorBehind = trace(nextRay, depth - 1);
+            
+            // 混合公式：(表面色 * alpha) + (背景色 * (1-alpha))
+            Color blended = localColor.multiply(alpha)
+                                      .add(colorBehind.multiply(1.0 - alpha));
+            return blended.clamp();
+        }
+
+        return localColor.clamp();
+    }
+
+
     /**
      * 查找射线与场景中所有形状的最近交点
      */
@@ -83,16 +111,18 @@ public class SimpleRayTracer {
             return ((Sphere) shape).getColor();
         }
         // 适配Plane的getColor()方法（若有Plane类）
-        else if (shape instanceof Plane) {
-            return ((Plane) shape).getColor();
+        else if (shape instanceof Ebene) {
+            return ((Ebene) shape).getColor();
         }
         // Group默认灰色
         else if (shape instanceof Group) {
-            return ((Ebene) shape).getColor();
+            // Group 本身通常没有颜色，Hit 返回的是子物体
+
+             return Color.white;
         }
         // 未知形状默认白色
         else {
-            return new Color(1.0, 1.0, 1.0);
+            return new Color(1.0, 1.0, 1.0, 1.0);
         }
     }
 
@@ -148,7 +178,7 @@ public class SimpleRayTracer {
             Vec3 blickRichtung = camera.position().subtract(p).normalize(); // 视线方向
 
             // Color ankommendeIntensitaet = licht.einfallend(p);   //入射光强
-            Color spiegelnderReflexionskoeffizient = new Color(1.0,1.0,1.0);    //镜面反射系数
+            Color spiegelnderReflexionskoeffizient = new Color(1.0,1.0,1.0,1);    //镜面反射系数
             float spiegelungsStaerke = 0.4f;  // 镜面反射强度
             double glanzExponent = 30;    //高光指数（越大越集中）
                 

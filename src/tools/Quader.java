@@ -56,7 +56,7 @@ public class Quader extends Group {
 
     // 默认6x6x6正方体s
     public Quader() {
-        this(6, new Color(0.1, 0.5, 0.9));
+        this(6, new Color(0.1, 0.5, 0.9,1.0)); // 默认蓝色
     }
 
     // 兼容原有长方体构造方法

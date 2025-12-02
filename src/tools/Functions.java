@@ -541,7 +541,7 @@ public class Functions {
      * @return A new Color object with the given RGB values.
      */
     public static Color color(double r, double g, double b) {
-        return new Color(r, g, b);
+        return new Color(r, g, b, 1.0);
     }
 
     /**

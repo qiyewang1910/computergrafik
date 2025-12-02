@@ -4,7 +4,7 @@ package tools;
  * Represents a color with red, green, and blue components.
  * This class provides constants for common colors.
  */
-public record Color(double r, double g, double b) {
+public record Color(double r, double g, double b, double a) {
 
     /** Black color (0, 0, 0). */
     public static final Color black = color(0, 0, 0);
@@ -27,9 +27,13 @@ public record Color(double r, double g, double b) {
 
     // 工厂方法：创建Color实例（兼容原有color()调用）
     public static Color color(double r, double g, double b) {
-        return new Color(r, g, b);
+        return new Color(r, g, b, 1.0);
     }
 
+    // 支持透明度的工厂方法
+    public static Color color(double r, double g, double b, double a) {
+        return new Color(r, g, b, a);
+    }
     /**
      * Returns a string representation of the color.
      *
@@ -37,7 +41,7 @@ public record Color(double r, double g, double b) {
      */
     @Override
     public String toString() {
-        return String.format("(Color: %.2f %.2f %.2f)", r, g, b);
+        return String.format("(Color: %.2f %.2f %.2f)", r, g, b, a);
     }
 
     /**
@@ -46,14 +50,14 @@ public record Color(double r, double g, double b) {
      * @return 新的颜色，分量为原分量 × factor
      */
     public Color multiply(float factor) {
-        return color(r * factor, g * factor, b * factor);
+        return color(r * factor, g * factor, b * factor, a);
     }
 
     /**
      * 颜色乘以系数（double版本，兼容更多场景）
      */
     public Color multiply(double factor) {
-        return color(r * factor, g * factor, b * factor);
+        return color(r * factor, g * factor, b * factor, a);
     }
 
     /**
@@ -72,7 +76,8 @@ public record Color(double r, double g, double b) {
         return color(
             intensity.r * attenuation,
             intensity.g * attenuation,
-            intensity.b * attenuation
+            intensity.b * attenuation,
+            intensity.a
         );
     }
 
@@ -90,7 +95,8 @@ public record Color(double r, double g, double b) {
         return color(
             this.r * other.r,
             this.g * other.g,
-            this.b * other.b
+            this.b * other.b,
+            this.a 
         );
     }
 
@@ -101,7 +107,8 @@ public record Color(double r, double g, double b) {
         double clampedR = Math.max(0.0, Math.min(1.0, r));
         double clampedG = Math.max(0.0, Math.min(1.0, g));
         double clampedB = Math.max(0.0, Math.min(1.0, b));
-        return color(clampedR, clampedG, clampedB);
+        double clampedA = Math.max(0.0, Math.min(1.0, a));
+        return color(clampedR, clampedG, clampedB, clampedA);
     }
 
 }
