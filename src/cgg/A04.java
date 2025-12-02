@@ -27,7 +27,7 @@ public class A04 {
 
         Vec3 cameraPos = new Vec3(27,25,-72);  // 平移，相机位置
         Vec3 cameraTarget = new Vec3(15,10, -22); // 相机看向的目标
-        SimpleCamera camera = new SimpleCamera(Math.PI / 3, 600, 600, cameraPos, cameraTarget);
+        SimpleCamera camera = new SimpleCamera(Math.PI / 3, 800, 800, cameraPos, cameraTarget);
 
     
         List<Shape> scene = new ArrayList<>();
@@ -59,7 +59,7 @@ public class A04 {
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
 
             // 正方形地面
-            Quader box = new Quader(24, new Color(0.9, 0.1, 0.1,0.3)); // 半透明红色
+            Quader box = new Quader(10, new Color(1.0, 1.0, 1.0,1)); // 半透明色
             Mat44 boxTrans = Mat44.translate(-1, 0.4, -19); // 这里的坐标是相对于当前矩阵的偏移
             box.setTransform(boxTrans);
             snowmanMatrixGroup.addChild(box); 
@@ -81,12 +81,12 @@ public class A04 {
         
         // 5.1 添加方向光源（太阳光）
         Vec3 lichtRichtung = new Vec3(-5, -5, -2).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(1f, 1f, 1f, 1f); // 光源强度 
+        Color lichtIntensitaet = new Color(0.7f, 0.7f, 0.7f, 1f); // 光源强度 
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（上方）
         Vec3 punktLichtPos = new Vec3(5, 15, -25);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(2, 2, 2, 1); // 点光源强度
+        Color punktLichtIntens = new Color(0.4, 0.4, 0.4, 1); // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
         // 6. 光线追踪（传入光源列表）
@@ -98,14 +98,14 @@ public class A04 {
         );
 
         //  6. 渲染图片
-        Image image = new Image(600,600);
+        Image image = new Image(800,800);
         System.out.println("start rendering...");
 
-        for (int y = 0; y < 600; y++) {
+        for (int y = 0; y < 800; y++) {
             if(y % 100 == 0){
-                System.out.println("doing: "+ (y * 100 / 600 ) + "% ");
+                System.out.println("doing: "+ (y * 100 / 800 ) + "% ");
             }
-            for (int x = 0; x < 600; x++){
+            for (int x = 0; x < 800; x++){
                 Color pixelColor = rayTracer.getColor(x, y);
 
                 // 核心修改：如果是背景色，替换为星空颜色
@@ -175,7 +175,7 @@ public class A04 {
                 Vec3 baseCenter = new Vec3(x, yPos, z);
 
                 // 按列设置颜色（偶数列黑，奇数列白）
-                Color color = (col % 2 == 0) ? new Color(0.02, 0.02, 0.02, z) : new Color(1,1,1,1);
+                Color color = (col % 2 == 0) ? new Color(0.01, 0.01, 0.01, 1) : new Color(1,1,1,1);
                 // 创建雪人组并添加到对应组
                 Group snowman = createSnowman(baseCenter, baseRadius, color);
                 if (col % 2 == 0) {

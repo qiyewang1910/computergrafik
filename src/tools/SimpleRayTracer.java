@@ -41,7 +41,7 @@ public class SimpleRayTracer {
     
     public Color trace(Ray ray, int depth) {
         if (depth <= 0) {
-            return backgroundColor; // 达到递归深度，返回黑色
+            return backgroundColor; // 达到递归深度，返回背景色
         }
 
         // 查找最近交点
@@ -137,7 +137,7 @@ public class SimpleRayTracer {
         Color objColor = getShapeColor(hit.shape());
 
         // 环境光
-        float ambientStrength = 0.1f;
+        float ambientStrength = 0.05f;
         Color ambient = objColor.multiply(ambientStrength);
 
         // 漫反射 + 镜面反射
@@ -164,7 +164,7 @@ public class SimpleRayTracer {
 
             // 3. 漫反射（兰伯特定律）
             double dotPktDiffus = Math.max(0, n.dot(l));  // 避免背面受光
-            float diffuseStrength = 0.7f;
+            float diffuseStrength = 0.5f;
             Color diffuse = objColor
                 .multiply(diffuseStrength * dotPktDiffus)
                 .multiplyWithColor(lightIntensity);
@@ -179,7 +179,7 @@ public class SimpleRayTracer {
 
             // Color ankommendeIntensitaet = licht.einfallend(p);   //入射光强
             Color spiegelnderReflexionskoeffizient = new Color(1.0,1.0,1.0,1);    //镜面反射系数
-            float spiegelungsStaerke = 0.4f;  // 镜面反射强度
+            float spiegelungsStaerke = 0.5f;  // 镜面反射强度
             double glanzExponent = 30;    //高光指数（越大越集中）
                 
 
