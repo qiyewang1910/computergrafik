@@ -150,7 +150,7 @@ public class A04 {
     /**
      * 创建一个雪人组（包含上下两个球体）
      */
-    private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color) {
+    private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color, boolean isWhiteSnowman) {
         Group snowman = new Group();
         
         // 下大球（原球体）
@@ -166,6 +166,35 @@ public class A04 {
         );
         Sphere topSphere = new Sphere(topCenter, topRadius, color);
         snowman.addChild(topSphere);
+
+
+        // ========== 核心修改：直接通过布尔值判断是否加眼睛 ==========
+        if (isWhiteSnowman) {
+            // 眼睛配置：黑色、极小球体、对称分布在头部两侧
+            double eyeRadius = 0.15; // 眼睛大小（适配头部1.4的半径）
+            Color eyeColor = new Color(0.0, 0.0, 0.0, 1); // 纯黑色
+            double eyeOffsetX = 0.5; // 眼睛左右间距（对称）
+            double eyeOffsetY = 0.3; // 眼睛在头部上方偏移
+            double eyeOffsetZ = topRadius - 0.1; // 眼睛向前突出头部
+
+            // 左眼（X轴负方向）
+            Vec3 leftEyePos = new Vec3(
+                topCenter.x() - eyeOffsetX,
+                topCenter.y() + eyeOffsetY,
+                topCenter.z() + eyeOffsetZ
+            );
+            Sphere leftEye = new Sphere(leftEyePos, eyeRadius, eyeColor);
+            snowman.addChild(leftEye);
+
+            // 右眼（X轴正方向，对称）
+            Vec3 rightEyePos = new Vec3(
+                topCenter.x() + eyeOffsetX,
+                topCenter.y() + eyeOffsetY,
+                topCenter.z() + eyeOffsetZ
+            );
+            Sphere rightEye = new Sphere(rightEyePos, eyeRadius, eyeColor);
+            snowman.addChild(rightEye);
+        }
 
         
 
@@ -211,8 +240,11 @@ public class A04 {
 
                 // 按列设置颜色（偶数列黑，奇数列白）
                 Color color = (col % 2 == 0) ? new Color(0.01, 0.01, 0.01, 1) : new Color(1,1,1,1);
+                // 直接判断是否为白色雪人（奇数列=白色）
+                boolean isWhiteSnowman = (col % 2 != 0);
+            
                 // 创建雪人组并添加到对应组
-                Group snowman = createSnowman(baseCenter, baseRadius, color);
+                Group snowman = createSnowman(baseCenter, baseRadius, color, col % 2 != 0);
                 if (col % 2 == 0) {
                     blackGroup.addChild(snowman);
                 } else {
