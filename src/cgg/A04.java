@@ -71,13 +71,6 @@ public class A04 {
 
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
-
-
-         // 红色正方体（左下角）=====
-         Quader redBox = new Quader(10, new Color(0.9, 0.1, 0.1));
-         Mat44 redBoxTrans = Mat44.translate(-10, 10, -40);
-         redBox.setTransform(redBoxTrans);
-         scene.add(redBox);
       
         
         // 4. 背景色

@@ -253,31 +253,51 @@ public final class Mat44 {
     public Mat44 invert() {
         Mat44 inv = new Mat44(); // 初始化为单位矩阵
     
-        // 1. 提取原矩阵的缩放、旋转、平移分量
-        double sx = get(0, 0);
-        double sy = get(1, 1);
-        double sz = get(2, 2);
+        // --- 1. 处理旋转部分 ---
+        // 原来的代码只能处理Y轴，现在我们要处理任意旋转。
+        // 旋转矩阵的逆 = 转置 (Transpose)，也就是把 行 变成 列。
+        
+        // 读取原矩阵的“基向量”（这代表了X, Y, Z轴的方向）
+        // 第一列 (X轴方向)
+        double r00 = get(0, 0); 
+        double r10 = get(0, 1); 
+        double r20 = get(0, 2);
+        
+        // 第二列 (Y轴方向)
+        double r01 = get(1, 0); 
+        double r11 = get(1, 1); 
+        double r21 = get(1, 2);
+        
+        // 第三列 (Z轴方向)
+        double r02 = get(2, 0); 
+        double r12 = get(2, 1); 
+        double r22 = get(2, 2);
+    
+        // 设置到逆矩阵中：行列互换 (注意看 set 的坐标变化)
+        // 例如：原矩阵的 (1,0) 放到新矩阵的 (0,1)
+        inv.set(0, 0, r00); inv.set(1, 0, r10); inv.set(2, 0, r20);
+        inv.set(0, 1, r01); inv.set(1, 1, r11); inv.set(2, 1, r21);
+        inv.set(0, 2, r02); inv.set(1, 2, r12); inv.set(2, 2, r22);
+
+        // --- 2. 处理平移部分 ---
+        // 原矩阵的平移量
         double tx = get(3, 0);
         double ty = get(3, 1);
         double tz = get(3, 2);
-        double cos = get(0, 0); // 绕Y轴旋转的cos值
-        double sin = get(2, 0); // 绕Y轴旋转的sin值
+
+        // 逆平移不仅仅是取反 (-tx)，因为坐标轴旋转了，
+        // 我们需要计算： - (旋转部分的转置 * 平移量)
+        // 这其实就是点积运算：
+        double invTx = -(r00 * tx + r10 * ty + r20 * tz);
+        double invTy = -(r01 * tx + r11 * ty + r21 * tz);
+        double invTz = -(r02 * tx + r12 * ty + r22 * tz);
+
+        inv.set(3, 0, invTx);
+        inv.set(3, 1, invTy);
+        inv.set(3, 2, invTz);
     
-        // 2. 逆缩放：缩放比例取倒数
-        inv.set(0, 0, 1.0 / sx);
-        inv.set(1, 1, 1.0 / sy);
-        inv.set(2, 2, 1.0 / sz);
-    
-        // 3. 逆旋转：绕Y轴旋转的逆是角度取反（cos不变，sin取反）
-        inv.set(0, 2, sin / sx); // 原旋转项是 -sin，逆是 +sin
-        inv.set(2, 0, -sin / sz); // 原旋转项是 +sin，逆是 -sin
-    
-        // 4. 逆平移：平移量取反 + 旋转逆变换
-        double invTx = -tx / sx;
-        double invTz = -tz / sz;
-        inv.set(3, 0, invTx * cos - invTz * sin);
-        inv.set(3, 1, -ty / sy);
-        inv.set(3, 2, invTx * sin + invTz * cos);
+        // 保持齐次坐标的 1
+        inv.set(3, 3, 1.0);
     
         return inv;
     }
@@ -330,6 +350,21 @@ public final class Mat44 {
         return mat;
     }
 
+    // 绕Z轴旋转矩阵 
+    public static Mat44 rotateZ(double angle) {
+        Mat44 mat = new Mat44();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        // 绕Z轴旋转矩阵（列主序）
+        mat.set(0, 0, cos);
+        mat.set(0, 1, sin);
+        mat.set(1, 0, -sin);
+        mat.set(1, 1, cos);
+        mat.set(2, 2, 1.0);
+        mat.set(3, 3, 1.0);
+        return mat;
+    }
+
     /**
      * 创建平移矩阵（支持int/double参数）
      */
@@ -376,7 +411,7 @@ public final class Mat44 {
         double z = dir.x() * get(2, 0) + dir.y() * get(2, 1) + dir.z() * get(2, 2);
         return new Vec3(x, y, z);
     }
-    
+
 
 
     private double[] values;
