@@ -20,9 +20,6 @@ import tools.StarrySky;
 import tools.Vec2;
 import tools.Vec3;
 
-import static tools.Functions.multiplyPoint;
-
-
 
 public class A05 {
     
@@ -39,29 +36,6 @@ public class A05 {
     
         List<Shape> scene = new ArrayList<>();
 
-
-        // 1. 加载images文件夹下的snow图片
-        ImageTexture snowTexture = null;
-        Ebene slopePlane = null;
-
-        try {
-            snowTexture = new ImageTexture("images/snow.jpg");
-            System.out.println("雪纹理加载成功！");
-            // 直接创建带纹理的平面
-            slopePlane = new Ebene(snowTexture);
-            slopePlane.setTextureScale(0.1); // 纹理密度（可调整为0.2/0.3）
-        } catch (Exception e) {
-            System.err.println("Texture loading failed! Please check if the path is images/snow.jpg");
-            System.err.println("Cause of the error:" + e.getMessage());
-            // 加载失败时降级为白色平面
-            slopePlane = new Ebene(new Color(1,1,1,1)); 
-        }
-
-        // 设置平面变换（20度坡度 + Y=-80平移）
-        Mat44 slopeTrans = Mat44.rotateX(Math.toRadians(20))
-                                .multiply(Mat44.translate(0,-80, 0));
-        slopePlane.setTransform(slopeTrans);
-        scene.add(slopePlane);
 
 
 
@@ -90,7 +64,6 @@ public class A05 {
             createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
-
           
 
             // 平移当前矩阵：沿Z轴前后排列（i=0最前，i越大越往后）
@@ -101,6 +74,27 @@ public class A05 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
       
+
+         // 1. 加载images文件夹下的snow图片
+         ImageTexture snowTexture = null;
+         Ebene slopePlane = null;
+         try {
+             snowTexture = new ImageTexture("images/snow.jpg");
+             System.out.println("photo加载成功!");
+             // 直接创建带纹理的平面
+             slopePlane = new Ebene(snowTexture);
+             slopePlane.setTextureScale(0.001); // 纹理密度
+         } catch (Exception e) {
+             System.err.println("Texture loading failed! Please check if the path is images/snow.jpg");
+             System.err.println("Cause of the error:" + e.getMessage());
+             // 加载失败时降级为白色平面
+             slopePlane = new Ebene(new Color(1,1,1,1)); 
+         }
+         // 设置平面变换（20度坡度 + Y=-80平移）
+         Mat44 slopeTrans = Mat44.rotateX(Math.toRadians(20))
+                                 .multiply(Mat44.translate(0,-80, 0));
+         slopePlane.setTransform(slopeTrans);
+         scene.add(slopePlane);
         
 
     
@@ -117,8 +111,8 @@ public class A05 {
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（上方）
-        Vec3 punktLichtPos = new Vec3(-5, 15, -25);  // 点光源位置（球体上方）
-        Color punktLichtIntens = new Color(0.4, 0.4, 0.4, 1); // 点光源强度
+        Vec3 punktLichtPos = new Vec3(-5, 15, -20);  // 点光源位置（球体上方）
+        Color punktLichtIntens = new Color(0.6, 0.6, 0.6, 1); // 点光源强度
         lichtquellen.add(Lichtquelle.createPunktlicht(punktLichtPos, punktLichtIntens));
 
         // 6. 光线追踪（传入光源列表）
@@ -138,21 +132,23 @@ public class A05 {
                 System.out.println("doing: "+ (y * 100 / 800 ) + "% ");
             }
             for (int x = 0; x < 800; x++){
-                Color pixelColor = rayTracer.getColor(x, y);
-
+                
                 // 关键：检测是否击中slopePlane，若是则采样纹理
                 Ray ray = camera.generateRay(new Vec2(x, y));
-                Hit hit = slopePlane.intersect(ray); // 检测是否击中地面
-                if (hit != null) {
-                    // 调用getColorAt采样纹理（核心！）
-                    pixelColor = slopePlane.getColorAt(hit.position());
-                } 
-                // 如果是背景色，替换为星空颜色
-                else if (isBackgroundColor(pixelColor, backgroundColor)) {
-                    // 获取当前像素对应的光线方向
-                    Vec3 rayDir = ray.direction();
-                    // 替换为星空颜色
-                    pixelColor = starrySky.getSkyColor(rayDir);
+
+                Color pixelColor = rayTracer.getColor(x, y);
+
+                // 只有当击中的是背景色时，才尝试采样地面纹理
+                if (isBackgroundColor(pixelColor, backgroundColor)) {
+                    // 检查是否击中地面
+                    Hit hit = slopePlane.intersect(ray);
+                    if (hit != null) {
+                        // 采样地面纹理
+                        pixelColor = slopePlane.getColorAt(hit.position());
+                    } else {
+                        // 既没击中物体也没击中地面，显示星空
+                        pixelColor = starrySky.getSkyColor(ray.direction());
+                    }
                 }
 
                 image.setPixel(x,y, pixelColor);

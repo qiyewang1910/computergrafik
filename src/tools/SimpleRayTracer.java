@@ -55,7 +55,7 @@ public class SimpleRayTracer {
         Color localColor = shade(closestHit);
         
         // 获取物体原始颜色的透明度
-        Color rawColor = getShapeColor(closestHit.shape());
+        Color rawColor = getShapeColor(closestHit.shape(), closestHit.position());
         double alpha = rawColor.a(); // 使用你新加的 alpha()
 
         // 如果物体是半透明 (alpha < 1.0)，则继续追踪
@@ -102,7 +102,7 @@ public class SimpleRayTracer {
     /**
      * 工具方法：从Shape中获取颜色
      */
-    private Color getShapeColor(Shape shape) {
+    private Color getShapeColor(Shape shape, Vec3 hitPosition) {
         if (shape == null) {
             return Color.black(); // 空值默认黑色
         }
@@ -110,14 +110,13 @@ public class SimpleRayTracer {
         if (shape instanceof Sphere) {
             return ((Sphere) shape).getColor();
         }
-        // 适配Plane的getColor()方法（若有Plane类）
+        // 适配Plane的getColor()方法
         else if (shape instanceof Ebene) {
-            return ((Ebene) shape).getColor();
+            return ((Ebene) shape).getColorAt(hitPosition);
         }
         // Group默认灰色
         else if (shape instanceof Group) {
             // Group 本身通常没有颜色，Hit 返回的是子物体
-
              return Color.white;
         }
         // 未知形状默认白色
@@ -134,10 +133,10 @@ public class SimpleRayTracer {
     private Color shade(Hit hit) {
         Vec3 p = hit.position();       // 交点坐标
         Vec3 n = hit.normal().normalize();  // 法向量归一
-        Color objColor = getShapeColor(hit.shape());
+        Color objColor = getShapeColor(hit.shape(), p); // 物体颜色
 
         // 环境光
-        float ambientStrength = 0.05f;
+        float ambientStrength = 0.1f;
         Color ambient = objColor.multiply(ambientStrength);
 
         // 漫反射 + 镜面反射
@@ -164,7 +163,7 @@ public class SimpleRayTracer {
 
             // 3. 漫反射（兰伯特定律）
             double dotPktDiffus = Math.max(0, n.dot(l));  // 避免背面受光
-            float diffuseStrength = 0.5f;
+            float diffuseStrength = 0.6f;
             Color diffuse = objColor
                 .multiply(diffuseStrength * dotPktDiffus)
                 .multiplyWithColor(lightIntensity);
@@ -179,7 +178,7 @@ public class SimpleRayTracer {
 
             // Color ankommendeIntensitaet = licht.einfallend(p);   //入射光强
             Color spiegelnderReflexionskoeffizient = new Color(1.0,1.0,1.0,1);    //镜面反射系数
-            float spiegelungsStaerke = 0.5f;  // 镜面反射强度
+            float spiegelungsStaerke = 0.7f;  // 镜面反射强度
             double glanzExponent = 30;    //高光指数（越大越集中）
                 
 

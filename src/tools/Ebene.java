@@ -42,7 +42,6 @@ public class Ebene implements Shape {
         this(Ausdehnung.UNBEGRENZT, 0, new Color(1,1,1,1)); // 纯色设为null，优先用纹理
         this.texture = texture;
     }
-
     // 带纹理+自定义缩放因子（可选）
     public Ebene(ImageTexture texture, double textureScale) {
         this(Ausdehnung.UNBEGRENZT, 0, new Color(1,1,1,1));
@@ -133,7 +132,7 @@ public class Ebene implements Shape {
     @Override
     public Color getColor() {
         // 若有纹理，返回默认颜色（实际用getColorAt采样）；无纹理返回纯色
-        return texture != null ? new Color(1,1,1,1) : color;
+        return color;
     }
 
 
@@ -158,7 +157,7 @@ public class Ebene implements Shape {
         return color;
     }
 
-    // 新增：设置纹理缩放因子（可选）
+    // 设置纹理缩放因子（可选）
     public void setTextureScale(double scale) {
         this.textureScale = scale;
     }
