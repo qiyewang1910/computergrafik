@@ -2,9 +2,11 @@ package tools;
 
 import tools.Color;
 import tools.Hit;
+import tools.ImageTexture;
 import tools.Mat44;
 import tools.Ray;
 import tools.Shape;
+import tools.Vec2;
 import tools.Vec3;
 
 public class Ebene implements Shape {
@@ -13,8 +15,10 @@ public class Ebene implements Shape {
     private final Ausdehnung typ;
     private final double parameter;
     private final Color color;
+    private ImageTexture texture; // 新增：纹理属性（优先级高于纯色）
     private Mat44 transform; // 变换矩阵
     private Mat44 invTransform; // 逆变换矩阵
+    private double textureScale = 0.1; // 新增：纹理缩放因子（控制平铺密度）
 
     // 无限平面
     public Ebene(Color color) {
@@ -30,6 +34,23 @@ public class Ebene implements Shape {
     public Ebene(double seite, boolean istQuadrat, Color color) {
         this(Ausdehnung.QUADRATISCH, seite, color);
     }
+
+
+    // ========== 新增：带纹理的构造方法（核心） ==========
+    // 无限平面（纹理）
+    public Ebene(ImageTexture texture) {
+        this(Ausdehnung.UNBEGRENZT, 0, new Color(1,1,1,1)); // 纯色设为null，优先用纹理
+        this.texture = texture;
+    }
+
+    // 带纹理+自定义缩放因子（可选）
+    public Ebene(ImageTexture texture, double textureScale) {
+        this(Ausdehnung.UNBEGRENZT, 0, new Color(1,1,1,1));
+        this.texture = texture;
+        this.textureScale = textureScale;
+    }
+
+
 
     private Ebene(Ausdehnung typ, double parameter, Color color) {
         this.typ = typ;
@@ -106,9 +127,39 @@ public class Ebene implements Shape {
        
     }
 
-    // 获取平面颜色
+
+    // ========== 核心修改：支持纹理/纯色两种颜色获取方式 ==========
+    // 原有getColor（兼容旧代码）
     @Override
     public Color getColor() {
+        // 若有纹理，返回默认颜色（实际用getColorAt采样）；无纹理返回纯色
+        return texture != null ? new Color(1,1,1,1) : color;
+    }
+
+
+    // 新增：根据交点位置获取颜色（纹理/纯色）
+    public Color getColorAt(Vec3 hitPoint) {
+        // 1. 有纹理 → 采样纹理（无限平铺）
+        if (texture != null) {
+            // 将世界坐标的交点转换为局部坐标（消除平移/旋转影响）
+            Vec3 localHitPos = invTransform.multiplyPoint(hitPoint);
+            
+            // 计算UV坐标：X/Z * 缩放因子，无限平铺（取小数部分）
+            double u = localHitPos.x() * textureScale;
+            double v = localHitPos.z() * textureScale;
+            // 无限平铺 + 反转v轴（匹配图像坐标系）
+            u = u - Math.floor(u);
+            v = 1.0 - (v - Math.floor(v));
+            
+            // 采样纹理颜色
+            return texture.getColor(new Vec2(u, v));
+        }
+        // 2. 无纹理 → 返回原有纯色
         return color;
+    }
+
+    // 新增：设置纹理缩放因子（可选）
+    public void setTextureScale(double scale) {
+        this.textureScale = scale;
     }
 }

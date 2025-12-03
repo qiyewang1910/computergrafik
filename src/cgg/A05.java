@@ -6,6 +6,8 @@ import java.util.List;
 import tools.Color;
 import tools.Ebene;
 import tools.Group;
+import tools.Hit;
+import tools.ImageTexture;
 import tools.Lichtquelle;
 import tools.Mat44;
 import tools.Quader;
@@ -22,10 +24,11 @@ import static tools.Functions.multiplyPoint;
 
 
 
-
-public class A04 {
+public class A05 {
     
     public static void main(String[] args){
+
+        System.out.println("Current working directory:" + System.getProperty("user.dir"));
 
         StarrySky starrySky = new StarrySky();
 
@@ -35,6 +38,31 @@ public class A04 {
 
     
         List<Shape> scene = new ArrayList<>();
+
+
+        // 1. 加载images文件夹下的snow图片
+        ImageTexture snowTexture = null;
+        Ebene slopePlane = null;
+
+        try {
+            snowTexture = new ImageTexture("images/snow.jpg");
+            System.out.println("雪纹理加载成功！");
+            // 直接创建带纹理的平面
+            slopePlane = new Ebene(snowTexture);
+            slopePlane.setTextureScale(0.1); // 纹理密度（可调整为0.2/0.3）
+        } catch (Exception e) {
+            System.err.println("Texture loading failed! Please check if the path is images/snow.jpg");
+            System.err.println("Cause of the error:" + e.getMessage());
+            // 加载失败时降级为白色平面
+            slopePlane = new Ebene(new Color(1,1,1,1)); 
+        }
+
+        // 设置平面变换（20度坡度 + Y=-80平移）
+        Mat44 slopeTrans = Mat44.rotateX(Math.toRadians(20))
+                                .multiply(Mat44.translate(0,-80, 0));
+        slopePlane.setTransform(slopeTrans);
+        scene.add(slopePlane);
+
 
 
         // 循环创建多个4×4雪人矩阵
@@ -73,17 +101,9 @@ public class A04 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
       
-        // 1. 添加无限地面
-        Ebene slopePlane = new Ebene(new Color(1, 1, 1, 1)); 
-        // 2. 设置平面位置和朝向
-        Mat44 slopeTrans = Mat44.rotateX(Math. toRadians(20))
-                                .multiply(Mat44.translate(0,-80, 0));
-        slopePlane.setTransform(slopeTrans);
         
-        // 3. 将平面添加到场景（全局物体，最先添加确保在最底层）
-        scene.add(slopePlane);
 
-
+    
         
         // 4. 背景色
         Color backgroundColor = new Color(0.04, 0.04, 0.1, 1); // 深蓝色背景
@@ -105,7 +125,7 @@ public class A04 {
         SimpleRayTracer rayTracer = new SimpleRayTracer(
             camera,
             scene,
-            backgroundColor,
+            new Color(0.04,0.04,0.1,1), // 背景色
             lichtquellen  
         );
 
@@ -120,9 +140,15 @@ public class A04 {
             for (int x = 0; x < 800; x++){
                 Color pixelColor = rayTracer.getColor(x, y);
 
+                // 关键：检测是否击中slopePlane，若是则采样纹理
+                Ray ray = camera.generateRay(new Vec2(x, y));
+                Hit hit = slopePlane.intersect(ray); // 检测是否击中地面
+                if (hit != null) {
+                    // 调用getColorAt采样纹理（核心！）
+                    pixelColor = slopePlane.getColorAt(hit.position());
+                } 
                 // 如果是背景色，替换为星空颜色
-                if (isBackgroundColor(pixelColor, backgroundColor)) {
-                    Ray ray = camera.generateRay(new Vec2(x, y));
+                else if (isBackgroundColor(pixelColor, backgroundColor)) {
                     // 获取当前像素对应的光线方向
                     Vec3 rayDir = ray.direction();
                     // 替换为星空颜色
@@ -133,7 +159,7 @@ public class A04 {
             }
         }
 
-        image.writePng("a04");
+        image.writePng("a05");
     }
        
 
