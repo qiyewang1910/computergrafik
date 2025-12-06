@@ -83,7 +83,7 @@ public class A05 {
              System.out.println("photo加载成功!");
              // 直接创建带纹理的平面
              slopePlane = new Ebene(snowTexture);
-             slopePlane.setTextureScale(0.001); // 纹理密度
+             slopePlane.setTextureScale(0.01); // 纹理密度
          } catch (Exception e) {
              System.err.println("Texture loading failed! Please check if the path is images/snow.jpg");
              System.err.println("Cause of the error:" + e.getMessage());
@@ -92,7 +92,7 @@ public class A05 {
          }
          // 设置平面变换（20度坡度 + Y=-80平移）
          Mat44 slopeTrans = Mat44.rotateX(Math.toRadians(20))
-                                 .multiply(Mat44.translate(0,-80, 0));
+                                 .multiply(Mat44.translate(0,-30, 0));
          slopePlane.setTransform(slopeTrans);
          scene.add(slopePlane);
         
@@ -106,8 +106,8 @@ public class A05 {
         List<Lichtquelle> lichtquellen = new ArrayList<>();  
         
         // 5.1 添加方向光源（太阳光）
-        Vec3 lichtRichtung = new Vec3(-5, -20, -2).normalize();  // 光源方向
-        Color lichtIntensitaet = new Color(0.7f, 0.7f, 0.7f, 1f); // 光源强度 
+        Vec3 lichtRichtung = new Vec3(-5, -2, -2).normalize();  // 光源方向
+        Color lichtIntensitaet = new Color(0.7f, 0.7f, 0.7f, 1.5f); // 光源强度 
         lichtquellen.add(Lichtquelle.createRichtungslicht(lichtRichtung, lichtIntensitaet));
         
         // 5.2 添加点光源（上方）
