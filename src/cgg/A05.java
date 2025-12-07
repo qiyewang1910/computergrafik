@@ -21,6 +21,7 @@ import tools.Vec2;
 import tools.Vec3;
 
 
+
 public class A05 {
     
     public static void main(String[] args){
@@ -37,6 +38,16 @@ public class A05 {
         List<Shape> scene = new ArrayList<>();
 
 
+
+        // ========== 修改：加载地球纹理（用于黑色雪人） ==========
+        ImageTexture globeTexture = null;
+        try {
+            globeTexture = new ImageTexture("images/globus.png");
+            System.out.println("Globe texture loaded successfully!");
+        } catch (Exception e) {
+            System.err.println("Failed to load globe texture: " + e.getMessage());
+            // 纹理加载失败时，雪人将使用纯色
+        }
 
 
 
@@ -62,7 +73,7 @@ public class A05 {
             whiteSnowmanGroup.setTransform(whiteTrans);
 
             // 创建雪人网格
-            createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup);
+            createSnowmanGrid(4, 4,blackSnowmanGroup, whiteSnowmanGroup, globeTexture);
             snowmanMatrixGroup.addChild(blackSnowmanGroup);
             snowmanMatrixGroup.addChild(whiteSnowmanGroup);
           
@@ -75,11 +86,6 @@ public class A05 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
       
-
-        ImageTexture globeTexture = new ImageTexture("images/globus.png");
-        Sphere globe = new Sphere(new Vec3(-5,15,-20), 5, globeTexture);
-        
-        
 
 
          // 1. 加载images文件夹下的snow图片
@@ -179,11 +185,18 @@ public class A05 {
     /**
      * 创建一个雪人组（包含上下两个球体）
      */
-    private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color, boolean addBase) {
+    private static Group createSnowman(Vec3 baseCenter, double baseRadius, Color color, boolean addBase, ImageTexture globeTexture) {
         Group snowman = new Group();
         
-        // 下大球（原球体）
-        Sphere baseSphere = new Sphere(baseCenter, baseRadius, color);
+        // ========== 修改4：黑色雪人的下大球使用纹理 ==========
+        Sphere baseSphere;
+        if (globeTexture != null && color.r() < 0.1) { // 判断是否为黑色
+            // 黑色雪人的下球使用地球纹理
+            baseSphere = new Sphere(baseCenter, baseRadius, globeTexture);
+        } else {
+            // 白色雪人使用纯色
+            baseSphere = new Sphere(baseCenter, baseRadius, color);
+        }
         snowman.addChild(baseSphere);
         
         // 上小球（半径为大球的1/2，位置在正上方）
@@ -221,7 +234,7 @@ public class A05 {
         
     }
 
-    private static void createSnowmanGrid(int rows, int cols, Group blackGroup, Group whiteGroup) {
+    private static void createSnowmanGrid(int rows, int cols, Group blackGroup, Group whiteGroup, ImageTexture globeTexture) {
         double baseRadius = 1.8; // 保留原大球半径
         double spacing = 4.6;    // 保留原间距
         double yPos = baseRadius; // 下大球的y位置（原球体y坐标）
@@ -241,7 +254,7 @@ public class A05 {
                 Color color = (col % 2 == 0) ? new Color(0.01, 0.01, 0.01, 1) : new Color(1,1,1,1);
             
                 // 创建雪人组并添加到对应组
-                Group snowman = createSnowman(baseCenter, baseRadius, color, col % 2 != 0);
+                Group snowman = createSnowman(baseCenter, baseRadius, color, col % 2 != 0, globeTexture);
                 if (col % 2 == 0) {
                     blackGroup.addChild(snowman);
                 } else {

@@ -10,11 +10,11 @@ public class Hit {
     private final Vec2 uv; //相交点的UV坐标
 
 
-    public Hit(double t, Vec3 p, Vec3 normal, Material material, Vec2 uv) {
+    public Hit(double t, Vec3 p, Vec3 normal, Shape shape, Vec2 uv) {
             this.t = t;
             this.p = p;
             this.normal = normal;
-            this.shape = materialial;
+            this.shape = shape;
             this.uv = uv;
     }
 

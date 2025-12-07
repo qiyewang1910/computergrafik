@@ -126,7 +126,16 @@ public class SimpleRayTracer {
     private Color shade(Hit hit) {
         Vec3 p = hit.position();       // 交点坐标
         Vec3 n = hit.normal().normalize();  // 法向量归一
-        Color objColor = getShapeColor(hit.shape(), p); // 物体颜色
+        
+        // 直接使用Hit中的UV坐标
+        Color objColor;
+        if (hit.shape() instanceof Sphere && hit.uv() != null) {
+            objColor = ((Sphere) hit.shape()).getColorAt(hit.uv());
+        } else if (hit.shape() instanceof Ebene) {
+            objColor = ((Ebene) hit.shape()).getColorAt(p);
+        } else {
+            objColor = hit.shape().getColor();
+        }
 
         // 环境光
         float ambientStrength = 0.1f;

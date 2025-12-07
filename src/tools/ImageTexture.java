@@ -104,7 +104,7 @@ public class ImageTexture implements Sampler {
         double b = components >= 3 ? pixelBuffer[2] : r;
 
         // 4. 归一化颜色到[0,1]范围
-        Color color = color(r, g, b);
-        return divide(color, componentScale);
+        return new Color(r / componentScale, g / componentScale, b / componentScale, 1.0);
     }
+
 }
