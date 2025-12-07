@@ -7,13 +7,15 @@ public class Hit {
     private final Vec3 p;    // 相交点坐标
     private final Vec3 normal;    //相交点法向量（单位向量，物体外部）
     private final Shape shape; //相交的形状
+    private final Vec2 uv; //相交点的UV坐标
 
 
-    public Hit(double t, Vec3 p, Vec3 normal, Shape shape) {
-        this.t = t;
-        this.p = p;
-        this.normal = normal;
-        this.shape = shape;
+    public Hit(double t, Vec3 p, Vec3 normal, Material material, Vec2 uv) {
+            this.t = t;
+            this.p = p;
+            this.normal = normal;
+            this.shape = materialial;
+            this.uv = uv;
     }
 
   
@@ -31,7 +33,7 @@ public class Hit {
         Vec3 newNormal = transformNormal(mat, this.normal);
         
         // 3. 生成新交点（t值不变，形状不变）
-        return new Hit(this.t, newPosition, newNormal, this.shape);
+        return new Hit(this.t, newPosition, newNormal, this.shape, uv);
     }
 
     // ========== 工具方法：点/法向量的矩阵变换 ==========
@@ -81,6 +83,10 @@ public class Hit {
 
     public Vec3 position(){
         return p;
+    }
+
+    public Vec2 uv() { 
+        return uv; 
     }
 
 }

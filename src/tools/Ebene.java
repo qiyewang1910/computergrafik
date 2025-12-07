@@ -1,13 +1,5 @@
 package tools;
 
-import tools.Color;
-import tools.Hit;
-import tools.ImageTexture;
-import tools.Mat44;
-import tools.Ray;
-import tools.Shape;
-import tools.Vec2;
-import tools.Vec3;
 
 public class Ebene implements Shape {
     public enum Ausdehnung { UNBEGRENZT, KREISRUND, QUADRATISCH }
@@ -122,7 +114,7 @@ public class Ebene implements Shape {
 
 
         // 创建Hit对象（t值使用原始射线的参数，无需转换）
-        return new Hit(t, worldHitPos, worldNormal, this);
+        return new Hit(t, worldHitPos, worldNormal, this, null);
        
     }
 

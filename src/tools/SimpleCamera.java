@@ -1,11 +1,7 @@
 package tools;
 
-import tools.Ray;
-import tools.Vec2;
-import tools.Vec3;
 
 public class SimpleCamera {
-    private final double alpha;  // 视场角
     private final int width;     // 图像宽度
     private final int height;    // 图像高度
     private final double d;      // 成像平面距离
@@ -17,7 +13,6 @@ public class SimpleCamera {
 
     // 初始化相机参数，包括位置
     public SimpleCamera(double alpha, int width, int height, Vec3 position) {
-        this.alpha = alpha;
         this.width = width;
         this.height = height;
         this.d = (width / 2.0) / Math.tan(alpha / 2.0); // 计算成像平面距离
@@ -31,7 +26,6 @@ public class SimpleCamera {
 
     // 构造方法2: 支持自定义朝向（平移+旋转）
     public SimpleCamera(double alpha, int width, int height, Vec3 position, Vec3 forwardDir) {
-        this.alpha = alpha;
         this.width = width;
         this.height = height;
         this.d = (width / 2.0) / Math.tan(alpha / 2.0);

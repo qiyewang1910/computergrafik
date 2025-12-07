@@ -1,14 +1,7 @@
 package tools;
 
 import java.util.List;
-import tools.Color;
-import tools.Hit;
-import tools.Lichtquelle;
-import tools.Ray;
-import tools.Shape;
-import tools.SimpleCamera;
-import tools.Vec2;
-import tools.Vec3;
+
 
 import static tools.Functions.reflect;
 

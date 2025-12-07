@@ -6,8 +6,6 @@ package tools;
 
 import static tools.Functions.*;
 
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * Represents a bounding box in 3D space defined by two points: minimum and maximum.

@@ -1,8 +1,5 @@
 package tools;
 
-import tools.Color;
-import tools.Random;
-import tools.Vec3;
 
 public class StarrySky{
     private Random random = Random.generator;

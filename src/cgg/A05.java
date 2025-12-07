@@ -39,6 +39,7 @@ public class A05 {
 
 
 
+
         // 循环创建多个4×4雪人矩阵
         int matrixCount = 20; // 矩阵数量
         double matrixSpacing = 30; // 矩阵之间的间距
@@ -74,6 +75,12 @@ public class A05 {
             scene.add(snowmanMatrixGroup);  // 加入场景
         }
       
+
+        ImageTexture globeTexture = new ImageTexture("images/globus.png");
+        Sphere globe = new Sphere(new Vec3(-5,15,-20), 5, globeTexture);
+        
+        
+
 
          // 1. 加载images文件夹下的snow图片
          ImageTexture snowTexture = null;

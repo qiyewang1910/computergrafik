@@ -1,9 +1,15 @@
 package tools;
 
-public record ColorSampler(Color color) implements Sampler {
+public class ColorSampler implements Sampler {
+
+  private final Color color;
+
+  public ColorSampler(Color color) {
+    this.color = color;
+  }
 
   @Override
-  public Color getColor(Vec2 at) {
+  public Color sample(Vec2 uv) {
     return color;
   }
 }

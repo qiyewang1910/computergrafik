@@ -1,9 +1,5 @@
 package tools;
 
-import tools.Color;
-import tools.Ebene;
-import tools.Group;
-import tools.Mat44;
 
 public class Quader extends Group {
 

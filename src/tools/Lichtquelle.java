@@ -1,7 +1,5 @@
 package tools;
 
-import tools.Color;
-import tools.Vec3;
 
 public interface Lichtquelle {
     Vec3 richtung(Vec3 punkt);

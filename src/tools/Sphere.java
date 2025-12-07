@@ -1,19 +1,17 @@
 package tools;
 
-import tools.Color;
-import tools.Hit;
-import tools.Ray;
-import tools.Vec3;
 
 public class Sphere implements Shape {
     private final Vec3 c;
     private final double r;
     private final Color color;
+    private final Material material;
 
-    public Sphere(Vec3 c, double r, Color color){
+    public Sphere(Vec3 c, double r, Color color,Material material){
         this.c = c;
         this.r = r;
         this.color = color;
+        this.material = material;
     }
 
     @Override
@@ -43,10 +41,15 @@ public class Sphere implements Shape {
         // 计算交点位置和法向量
         Vec3 point = ray.at(t);
         Vec3 normal = point.subtract(c).normalize();
-        return new Hit(t, point, normal, this);
+        // 计算UV坐标（球面转纹理坐标）
+        double u = 0.5 + Math.atan2(normal.z(), normal.x()) / (2 * Math.PI);
+        double v = 0.5 - Math.asin(normal.y()) / Math.PI;
+        Vec2 uv = new Vec2(u, v);
+        return new Hit(t, point, normal, material, uv);
     }
 
      // 新增：获取球体颜色（供光照计算使用）
+    @Override
     public Color getColor() {
         return this.color;
     }

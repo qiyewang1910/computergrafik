@@ -1,6 +1,6 @@
 package cgg;
 
-import cgg.Image;
+
 import java.util.ArrayList;
 import java.util.List;
 import tools.Color;
@@ -18,7 +18,6 @@ import tools.StarrySky;
 import tools.Vec2;
 import tools.Vec3;
 
-import static tools.Functions.multiplyPoint;
 
 
 

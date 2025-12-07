@@ -1,10 +1,5 @@
 package tools;
 
-import tools.Color;
-import tools.Hit;
-import tools.Ray;
-import tools.Shape;
-import tools.Vec3;
 
 public class Plane implements Shape {
     private final Vec3 center;    // 球面中心
@@ -20,6 +15,7 @@ public class Plane implements Shape {
     }
 
     // 补充：获取平面颜色（必须加）
+    @Override
     public Color getColor() {
         return this.color;
     }
@@ -73,7 +69,7 @@ public class Plane implements Shape {
             normal = normal.multiply(-1);
         }
 
-        return new Hit(t, position, normal, this);
+        return new Hit(t, position, normal, this, null);
     }
 
     // 保留原有的color()方法（不修改命名）
